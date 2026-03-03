@@ -1,29 +1,28 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EquipmentCard from "@/components/EquipmentCard";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { sampleEquipment, equipmentTypes } from "@/lib/equipmentData";
-import { Search, MapPin } from "lucide-react";
+import { useEquipment, useDistricts, useVillages, equipmentTypes } from "@/lib/equipmentData";
+import { Search, MapPin, Loader2 } from "lucide-react";
 
 const BrowseEquipment = () => {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [districtFilter, setDistrictFilter] = useState("all");
+  const [villageFilter, setVillageFilter] = useState("all");
 
-  const filtered = useMemo(() => {
-    return sampleEquipment.filter((eq) => {
-      const matchesType = typeFilter === "all" || eq.type === typeFilter;
-      const query = search.toLowerCase();
-      const matchesSearch =
-        !query ||
-        eq.name.toLowerCase().includes(query) ||
-        eq.village.toLowerCase().includes(query) ||
-        eq.district.toLowerCase().includes(query) ||
-        eq.state.toLowerCase().includes(query);
-      return matchesType && matchesSearch;
-    });
-  }, [search, typeFilter]);
+  const { data: districts } = useDistricts();
+  const { data: villages } = useVillages(districtFilter !== "all" ? districtFilter : undefined);
+  const { data: equipment, isLoading } = useEquipment({
+    type: typeFilter,
+    districtId: districtFilter,
+    villageId: villageFilter,
+    search: search || undefined,
+  });
+
+  const filtered = equipment || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -38,24 +37,56 @@ const BrowseEquipment = () => {
         </p>
 
         {/* Filters */}
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          <div className="relative flex-1">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search by village, district, or name..."
+              placeholder="Search by name..."
               className="pl-10"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full sm:w-48">
+            <SelectTrigger>
               <SelectValue placeholder="Equipment Type" />
             </SelectTrigger>
             <SelectContent>
               {equipmentTypes.map((type) => (
                 <SelectItem key={type.value} value={type.value}>
                   {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={districtFilter}
+            onValueChange={(val) => {
+              setDistrictFilter(val);
+              setVillageFilter("all");
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select District" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Districts</SelectItem>
+              {districts?.map((d) => (
+                <SelectItem key={d.id} value={d.id}>
+                  {d.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={villageFilter} onValueChange={setVillageFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Village/Taluka" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Villages</SelectItem>
+              {villages?.map((v) => (
+                <SelectItem key={v.id} value={v.id}>
+                  {v.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -68,13 +99,19 @@ const BrowseEquipment = () => {
           <span>{filtered.length} equipment found</span>
         </div>
 
-        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((eq) => (
-            <EquipmentCard key={eq.id} equipment={eq} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="mt-16 flex justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((eq) => (
+              <EquipmentCard key={eq.id} equipment={eq} />
+            ))}
+          </div>
+        )}
 
-        {filtered.length === 0 && (
+        {!isLoading && filtered.length === 0 && (
           <div className="mt-16 text-center">
             <p className="text-lg text-muted-foreground">
               No equipment found. Try a different search or filter.

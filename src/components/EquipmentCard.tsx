@@ -1,4 +1,4 @@
-import { Equipment } from "@/lib/equipmentData";
+import { EquipmentRow } from "@/lib/equipmentData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, IndianRupee, MessageCircle } from "lucide-react";
@@ -12,12 +12,14 @@ const typeImages: Record<string, string> = {
   harvester: harvesterImg,
 };
 
-const EquipmentCard = ({ equipment }: { equipment: Equipment }) => {
-  const image = equipment.image || typeImages[equipment.type] || tractorImg;
+const EquipmentCard = ({ equipment }: { equipment: EquipmentRow }) => {
+  const image = equipment.image_url || typeImages[equipment.type] || tractorImg;
+  const villageName = equipment.villages?.name || "";
+  const districtName = equipment.districts?.name || "";
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent(
-      `Hi ${equipment.ownerName}, I'm interested in renting your ${equipment.name}. Is it available?`
+      `Hi ${equipment.owner_name}, I'm interested in renting your ${equipment.name}. Is it available?`
     );
     window.open(`https://wa.me/${equipment.whatsapp}?text=${message}`, "_blank");
   };
@@ -51,7 +53,7 @@ const EquipmentCard = ({ equipment }: { equipment: Equipment }) => {
         <div className="mt-3 flex flex-wrap gap-2">
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
-            <span>{equipment.village}, {equipment.district}</span>
+            <span>{villageName}, {districtName}</span>
           </div>
         </div>
 
@@ -60,20 +62,20 @@ const EquipmentCard = ({ equipment }: { equipment: Equipment }) => {
             <Clock className="h-3.5 w-3.5 text-secondary" />
             <span className="text-sm font-semibold text-card-foreground">
               <IndianRupee className="inline h-3 w-3" />
-              {equipment.pricePerHour}/hr
+              {equipment.price_per_hour}/hr
             </span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-sm text-muted-foreground">
               <IndianRupee className="inline h-3 w-3" />
-              {equipment.pricePerDay}/day
+              {equipment.price_per_day}/day
             </span>
           </div>
         </div>
 
         <div className="mt-3 flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
-            Owner: {equipment.ownerName} · Qty: {equipment.quantity}
+            Owner: {equipment.owner_name} · Qty: {equipment.quantity}
           </span>
         </div>
 
