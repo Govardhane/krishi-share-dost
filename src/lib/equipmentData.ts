@@ -1,18 +1,36 @@
-export interface Equipment {
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+
+export interface District {
   id: string;
   name: string;
-  type: "tractor" | "rotavator" | "harvester" | "cultivator" | "sprayer" | "plough";
-  image: string;
-  pricePerHour: number;
-  pricePerDay: number;
-  ownerName: string;
-  whatsapp: string;
-  village: string;
-  district: string;
   state: string;
+}
+
+export interface Village {
+  id: string;
+  name: string;
+  district_id: string;
+}
+
+export interface EquipmentRow {
+  id: string;
+  name: string;
+  type: string;
+  description: string | null;
+  price_per_hour: number;
+  price_per_day: number;
+  owner_name: string;
+  whatsapp: string;
+  village_id: string;
+  district_id: string;
   available: boolean;
   quantity: number;
-  description: string;
+  image_url: string | null;
+  created_at: string;
+  // joined
+  districts?: { name: string };
+  villages?: { name: string };
 }
 
 export const equipmentTypes = [
@@ -23,103 +41,82 @@ export const equipmentTypes = [
   { value: "cultivator", label: "Cultivator" },
   { value: "sprayer", label: "Sprayer" },
   { value: "plough", label: "Plough" },
+  { value: "seed_drill", label: "Seed Drill" },
+  { value: "thresher", label: "Thresher" },
 ];
 
-export const sampleEquipment: Equipment[] = [
-  {
-    id: "1",
-    name: "Mahindra 575 DI Tractor",
-    type: "tractor",
-    image: "",
-    pricePerHour: 500,
-    pricePerDay: 3500,
-    ownerName: "Rajesh Kumar",
-    whatsapp: "919876543210",
-    village: "Rampur",
-    district: "Lucknow",
-    state: "Uttar Pradesh",
-    available: true,
-    quantity: 2,
-    description: "Well-maintained 45 HP tractor, suitable for ploughing and hauling.",
-  },
-  {
-    id: "2",
-    name: "Shaktiman Rotavator 6ft",
-    type: "rotavator",
-    image: "",
-    pricePerHour: 400,
-    pricePerDay: 2800,
-    ownerName: "Sunil Yadav",
-    whatsapp: "919988776655",
-    village: "Khandwa",
-    district: "Indore",
-    state: "Madhya Pradesh",
-    available: true,
-    quantity: 1,
-    description: "Heavy-duty rotavator for soil preparation. 6 feet working width.",
-  },
-  {
-    id: "3",
-    name: "John Deere Combine Harvester",
-    type: "harvester",
-    image: "",
-    pricePerHour: 1500,
-    pricePerDay: 10000,
-    ownerName: "Harpreet Singh",
-    whatsapp: "919112233445",
-    village: "Moga",
-    district: "Moga",
-    state: "Punjab",
-    available: true,
-    quantity: 1,
-    description: "High-capacity combine harvester for wheat and paddy.",
-  },
-  {
-    id: "4",
-    name: "Swaraj 744 FE Tractor",
-    type: "tractor",
-    image: "",
-    pricePerHour: 550,
-    pricePerDay: 3800,
-    ownerName: "Amar Patel",
-    whatsapp: "919223344556",
-    village: "Anand",
-    district: "Anand",
-    state: "Gujarat",
-    available: true,
-    quantity: 1,
-    description: "48 HP tractor in excellent condition. Ideal for all farming operations.",
-  },
-  {
-    id: "5",
-    name: "Power Sprayer 20L",
-    type: "sprayer",
-    image: "",
-    pricePerHour: 150,
-    pricePerDay: 800,
-    ownerName: "Lakshmi Devi",
-    whatsapp: "919334455667",
-    village: "Warangal",
-    district: "Warangal",
-    state: "Telangana",
-    available: true,
-    quantity: 3,
-    description: "Battery-operated power sprayer for pesticide and fertilizer application.",
-  },
-  {
-    id: "6",
-    name: "MB Plough 3-Bottom",
-    type: "plough",
-    image: "",
-    pricePerHour: 350,
-    pricePerDay: 2200,
-    ownerName: "Vinod Sharma",
-    whatsapp: "919445566778",
-    village: "Jaipur",
-    district: "Jaipur",
-    state: "Rajasthan",
-    available: false,
-    quantity: 1,
-    description: "3-bottom mould board plough for deep ploughing.",
-  },
-];
+export function useDistricts() {
+  return useQuery({
+    queryKey: ["districts"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("districts")
+        .select("id, name, state")
+        .order("name");
+      if (error) throw error;
+      return data as District[];
+    },
+  });
+}
+
+export function useVillages(districtId?: string) {
+  return useQuery({
+    queryKey: ["villages", districtId],
+    queryFn: async () => {
+      let query = supabase.from("villages").select("id, name, district_id").order("name");
+      if (districtId) {
+        query = query.eq("district_id", districtId);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as Village[];
+    },
+    enabled: districtId ? true : true,
+  });
+}
+
+export function useEquipment(filters?: { type?: string; districtId?: string; villageId?: string; search?: string }) {
+  return useQuery({
+    queryKey: ["equipment", filters],
+    queryFn: async () => {
+      let query = supabase
+        .from("equipment")
+        .select("*, districts(name), villages(name)")
+        .order("created_at", { ascending: false });
+
+      if (filters?.type && filters.type !== "all") {
+        query = query.eq("type", filters.type);
+      }
+      if (filters?.districtId && filters.districtId !== "all") {
+        query = query.eq("district_id", filters.districtId);
+      }
+      if (filters?.villageId && filters.villageId !== "all") {
+        query = query.eq("village_id", filters.villageId);
+      }
+      if (filters?.search) {
+        query = query.or(`name.ilike.%${filters.search}%,owner_name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as EquipmentRow[];
+    },
+  });
+}
+
+export async function insertEquipment(equipment: {
+  name: string;
+  type: string;
+  description: string;
+  price_per_hour: number;
+  price_per_day: number;
+  owner_name: string;
+  whatsapp: string;
+  village_id: string;
+  district_id: string;
+  quantity: number;
+}) {
+  const { data, error } = await supabase.from("equipment").insert(equipment).select();
+  if (error) throw error;
+  return data;
+}

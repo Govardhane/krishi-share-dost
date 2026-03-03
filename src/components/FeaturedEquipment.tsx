@@ -1,11 +1,12 @@
-import { sampleEquipment } from "@/lib/equipmentData";
+import { useEquipment } from "@/lib/equipmentData";
 import EquipmentCard from "./EquipmentCard";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 const FeaturedEquipment = () => {
-  const featured = sampleEquipment.filter((e) => e.available).slice(0, 3);
+  const { data: equipment, isLoading } = useEquipment();
+  const featured = (equipment || []).filter((e) => e.available).slice(0, 3);
 
   return (
     <section className="py-20">
@@ -26,11 +27,24 @@ const FeaturedEquipment = () => {
           </Link>
         </div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((eq) => (
-            <EquipmentCard key={eq.id} equipment={eq} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="mt-16 flex justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : featured.length === 0 ? (
+          <div className="mt-10 rounded-xl border bg-card p-10 text-center">
+            <p className="text-muted-foreground">No equipment listed yet. Be the first to list!</p>
+            <Link to="/list-equipment">
+              <Button className="mt-4">List Your Equipment</Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featured.map((eq) => (
+              <EquipmentCard key={eq.id} equipment={eq} />
+            ))}
+          </div>
+        )}
 
         <div className="mt-8 text-center sm:hidden">
           <Link to="/browse">
