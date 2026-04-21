@@ -45,6 +45,7 @@ export type Database = {
           image_url: string | null
           name: string
           owner_name: string
+          owner_user_id: string | null
           price_per_day: number
           price_per_hour: number
           quantity: number
@@ -63,6 +64,7 @@ export type Database = {
           image_url?: string | null
           name: string
           owner_name: string
+          owner_user_id?: string | null
           price_per_day: number
           price_per_hour: number
           quantity?: number
@@ -81,6 +83,7 @@ export type Database = {
           image_url?: string | null
           name?: string
           owner_name?: string
+          owner_user_id?: string | null
           price_per_day?: number
           price_per_hour?: number
           quantity?: number
@@ -107,6 +110,64 @@ export type Database = {
           },
           {
             foreignKeyName: "equipment_village_id_fkey"
+            columns: ["village_id"]
+            isOneToOne: false
+            referencedRelation: "villages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          district_id: string | null
+          full_name: string | null
+          id: string
+          taluka_id: string | null
+          updated_at: string
+          user_id: string
+          village_id: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          created_at?: string
+          district_id?: string | null
+          full_name?: string | null
+          id?: string
+          taluka_id?: string | null
+          updated_at?: string
+          user_id: string
+          village_id?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          created_at?: string
+          district_id?: string | null
+          full_name?: string | null
+          id?: string
+          taluka_id?: string | null
+          updated_at?: string
+          user_id?: string
+          village_id?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_taluka_id_fkey"
+            columns: ["taluka_id"]
+            isOneToOne: false
+            referencedRelation: "talukas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_village_id_fkey"
             columns: ["village_id"]
             isOneToOne: false
             referencedRelation: "villages"
