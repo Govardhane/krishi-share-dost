@@ -1,7 +1,7 @@
 import { EquipmentRow } from "@/lib/equipmentData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, IndianRupee, MessageCircle } from "lucide-react";
+import { MapPin, Clock, IndianRupee, MessageCircle, Phone, MessageSquare, User, Package } from "lucide-react";
 import tractorImg from "@/assets/tractor.jpg";
 import rotavatorImg from "@/assets/rotavator.jpg";
 import harvesterImg from "@/assets/harvester.jpg";
@@ -15,13 +15,27 @@ const typeImages: Record<string, string> = {
 const EquipmentCard = ({ equipment }: { equipment: EquipmentRow }) => {
   const image = equipment.image_url || typeImages[equipment.type] || tractorImg;
   const villageName = equipment.villages?.name || "";
+  const talukaName = equipment.talukas?.name || "";
   const districtName = equipment.districts?.name || "";
+
+  const phone = equipment.whatsapp.replace(/\D/g, "");
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent(
       `Hi ${equipment.owner_name}, I'm interested in renting your ${equipment.name}. Is it available?`
     );
-    window.open(`https://wa.me/${equipment.whatsapp}?text=${message}`, "_blank");
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+  };
+
+  const handleCall = () => {
+    window.location.href = `tel:+${phone}`;
+  };
+
+  const handleSMS = () => {
+    const message = encodeURIComponent(
+      `Hi ${equipment.owner_name}, I'm interested in renting your ${equipment.name}.`
+    );
+    window.location.href = `sms:+${phone}?body=${message}`;
   };
 
   return (
@@ -50,10 +64,22 @@ const EquipmentCard = ({ equipment }: { equipment: EquipmentRow }) => {
         </h3>
         <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{equipment.description}</p>
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5" />
-            <span>{villageName}, {districtName}</span>
+        <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+          <div className="flex items-start gap-1.5">
+            <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <span>
+              {villageName}
+              {talukaName && `, ${talukaName}`}
+              {districtName && `, ${districtName}`}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <User className="h-3.5 w-3.5 shrink-0" />
+            <span>{equipment.owner_name}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Package className="h-3.5 w-3.5 shrink-0" />
+            <span>Quantity: {equipment.quantity}</span>
           </div>
         </div>
 
@@ -73,21 +99,36 @@ const EquipmentCard = ({ equipment }: { equipment: EquipmentRow }) => {
           </div>
         </div>
 
-        <div className="mt-3 flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            Owner: {equipment.owner_name} · Qty: {equipment.quantity}
-          </span>
-        </div>
-
         <Button
           variant="whatsapp"
-          className="mt-3 w-full"
+          className="mt-4 w-full"
           onClick={handleWhatsApp}
           disabled={!equipment.available}
         >
           <MessageCircle className="h-4 w-4" />
-          Contact on WhatsApp
+          WhatsApp
         </Button>
+
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCall}
+            disabled={!equipment.available}
+          >
+            <Phone className="h-4 w-4" />
+            Call
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSMS}
+            disabled={!equipment.available}
+          >
+            <MessageSquare className="h-4 w-4" />
+            SMS
+          </Button>
+        </div>
       </div>
     </div>
   );
