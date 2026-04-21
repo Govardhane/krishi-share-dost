@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EquipmentCard from "@/components/EquipmentCard";
@@ -6,13 +7,28 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEquipment, useDistricts, useTalukas, useVillages, equipmentTypes } from "@/lib/equipmentData";
 import { Search, MapPin, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 
 const BrowseEquipment = () => {
+  const { user } = useAuth();
+  const { data: profile } = useProfile();
+
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [districtFilter, setDistrictFilter] = useState("all");
   const [talukaFilter, setTalukaFilter] = useState("all");
   const [villageFilter, setVillageFilter] = useState("all");
+  const [appliedDefault, setAppliedDefault] = useState(false);
+
+  // Default-filter to user's taluka after profile loads (one time)
+  useEffect(() => {
+    if (!appliedDefault && profile?.district_id && profile?.taluka_id) {
+      setDistrictFilter(profile.district_id);
+      setTalukaFilter(profile.taluka_id);
+      setAppliedDefault(true);
+    }
+  }, [profile, appliedDefault]);
 
   const { data: districts } = useDistricts();
   const { data: talukas } = useTalukas(districtFilter !== "all" ? districtFilter : undefined);
@@ -38,6 +54,17 @@ const BrowseEquipment = () => {
         <p className="mt-2 text-muted-foreground">
           Search by district, taluka, village or equipment type
         </p>
+
+        {!user && (
+          <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
+            <Link to="/auth" className="font-medium text-primary underline">Login</Link> to automatically see equipment available in your taluka.
+          </div>
+        )}
+        {user && profile?.taluka_id && appliedDefault && talukaFilter === profile.taluka_id && (
+          <div className="mt-4 rounded-lg border bg-card p-3 text-sm text-muted-foreground">
+            Showing equipment in your taluka. Change filters below to browse other areas.
+          </div>
+        )}
 
         {/* Filters */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
