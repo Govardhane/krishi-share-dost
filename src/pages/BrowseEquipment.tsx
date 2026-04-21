@@ -55,6 +55,17 @@ const BrowseEquipment = () => {
           Search by district, taluka, village or equipment type
         </p>
 
+        {!user && (
+          <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
+            <Link to="/auth" className="font-medium text-primary underline">Login</Link> to automatically see equipment available in your taluka.
+          </div>
+        )}
+        {user && profile?.taluka_id && appliedDefault && talukaFilter === profile.taluka_id && (
+          <div className="mt-4 rounded-lg border bg-card p-3 text-sm text-muted-foreground">
+            Showing equipment in your taluka. Change filters below to browse other areas.
+          </div>
+        )}
+
         {/* Filters */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="relative">
