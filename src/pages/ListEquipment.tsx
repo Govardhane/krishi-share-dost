@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { equipmentTypes, useDistricts, useVillages, insertEquipment } from "@/lib/equipmentData";
+import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment } from "@/lib/equipmentData";
 import { toast } from "sonner";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,11 +15,13 @@ const ListEquipment = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [districtId, setDistrictId] = useState("");
+  const [talukaId, setTalukaId] = useState("");
   const [villageId, setVillageId] = useState("");
   const [type, setType] = useState("");
 
   const { data: districts } = useDistricts();
-  const { data: villages } = useVillages(districtId || undefined);
+  const { data: talukas } = useTalukas(districtId || undefined);
+  const { data: villages } = useVillages(talukaId || undefined);
   const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,8 +29,8 @@ const ListEquipment = () => {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    if (!districtId || !villageId || !type) {
-      toast.error("Please select district, village and equipment type");
+    if (!districtId || !talukaId || !villageId || !type) {
+      toast.error("Please select district, taluka, village and equipment type");
       return;
     }
 
@@ -43,6 +45,7 @@ const ListEquipment = () => {
         owner_name: formData.get("ownerName") as string,
         whatsapp: formData.get("whatsapp") as string,
         village_id: villageId,
+        taluka_id: talukaId,
         district_id: districtId,
         quantity: Number(formData.get("quantity")) || 1,
       });
@@ -68,7 +71,7 @@ const ListEquipment = () => {
             Equipment Listed!
           </h2>
           <p className="mt-3 max-w-md text-muted-foreground">
-            Your equipment is now visible to farmers in your area. They'll contact you via WhatsApp.
+            Your equipment is now visible to farmers in your area. They'll contact you via WhatsApp, Call or SMS.
           </p>
           <Button className="mt-6" onClick={() => setSubmitted(false)}>
             List Another Equipment
@@ -148,18 +151,19 @@ const ListEquipment = () => {
                 <Input id="ownerName" name="ownerName" placeholder="Full name" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="whatsapp">WhatsApp Number</Label>
+                <Label htmlFor="whatsapp">WhatsApp / Phone Number</Label>
                 <Input id="whatsapp" name="whatsapp" placeholder="e.g., 919876543210" required />
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label>District</Label>
                 <Select
                   value={districtId}
                   onValueChange={(val) => {
                     setDistrictId(val);
+                    setTalukaId("");
                     setVillageId("");
                   }}
                 >
@@ -176,12 +180,39 @@ const ListEquipment = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Village / Taluka</Label>
-                <Select value={villageId} onValueChange={setVillageId} disabled={!districtId}>
+                <Label>Taluka</Label>
+                <Select
+                  value={talukaId}
+                  onValueChange={(val) => {
+                    setTalukaId(val);
+                    setVillageId("");
+                  }}
+                  disabled={!districtId}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder={districtId ? "Select village" : "Select district first"} />
+                    <SelectValue placeholder={districtId ? "Select taluka" : "Select district first"} />
                   </SelectTrigger>
                   <SelectContent>
+                    {talukas?.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Village</Label>
+                <Select value={villageId} onValueChange={setVillageId} disabled={!talukaId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={talukaId ? "Select village" : "Select taluka first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {villages?.length === 0 && (
+                      <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                        No villages yet for this taluka
+                      </div>
+                    )}
                     {villages?.map((v) => (
                       <SelectItem key={v.id} value={v.id}>
                         {v.name}

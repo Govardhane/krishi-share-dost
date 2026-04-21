@@ -4,20 +4,23 @@ import Footer from "@/components/Footer";
 import EquipmentCard from "@/components/EquipmentCard";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useEquipment, useDistricts, useVillages, equipmentTypes } from "@/lib/equipmentData";
+import { useEquipment, useDistricts, useTalukas, useVillages, equipmentTypes } from "@/lib/equipmentData";
 import { Search, MapPin, Loader2 } from "lucide-react";
 
 const BrowseEquipment = () => {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [districtFilter, setDistrictFilter] = useState("all");
+  const [talukaFilter, setTalukaFilter] = useState("all");
   const [villageFilter, setVillageFilter] = useState("all");
 
   const { data: districts } = useDistricts();
-  const { data: villages } = useVillages(districtFilter !== "all" ? districtFilter : undefined);
+  const { data: talukas } = useTalukas(districtFilter !== "all" ? districtFilter : undefined);
+  const { data: villages } = useVillages(talukaFilter !== "all" ? talukaFilter : undefined);
   const { data: equipment, isLoading } = useEquipment({
     type: typeFilter,
     districtId: districtFilter,
+    talukaId: talukaFilter,
     villageId: villageFilter,
     search: search || undefined,
   });
@@ -33,11 +36,11 @@ const BrowseEquipment = () => {
           Browse Equipment
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Search by village, district, or equipment type
+          Search by district, taluka, village or equipment type
         </p>
 
         {/* Filters */}
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -63,11 +66,12 @@ const BrowseEquipment = () => {
             value={districtFilter}
             onValueChange={(val) => {
               setDistrictFilter(val);
+              setTalukaFilter("all");
               setVillageFilter("all");
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select District" />
+              <SelectValue placeholder="District" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Districts</SelectItem>
@@ -78,9 +82,33 @@ const BrowseEquipment = () => {
               ))}
             </SelectContent>
           </Select>
-          <Select value={villageFilter} onValueChange={setVillageFilter}>
+          <Select
+            value={talukaFilter}
+            onValueChange={(val) => {
+              setTalukaFilter(val);
+              setVillageFilter("all");
+            }}
+            disabled={districtFilter === "all"}
+          >
             <SelectTrigger>
-              <SelectValue placeholder="Select Village/Taluka" />
+              <SelectValue placeholder="Taluka" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Talukas</SelectItem>
+              {talukas?.map((t) => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={villageFilter}
+            onValueChange={setVillageFilter}
+            disabled={talukaFilter === "all"}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Village" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Villages</SelectItem>
