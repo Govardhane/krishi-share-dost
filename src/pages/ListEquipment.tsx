@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Navigate, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -10,8 +11,13 @@ import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment 
 import { toast } from "sonner";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 
 const ListEquipment = () => {
+  const { user, loading: authLoading } = useAuth();
+  const { data: profile, isLoading: profileLoading } = useProfile();
+
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [districtId, setDistrictId] = useState("");
@@ -23,6 +29,18 @@ const ListEquipment = () => {
   const { data: talukas } = useTalukas(districtId || undefined);
   const { data: villages } = useVillages(talukaId || undefined);
   const queryClient = useQueryClient();
+
+  // Pre-fill location from profile
+  useEffect(() => {
+    if (profile && !districtId) {
+      if (profile.district_id) setDistrictId(profile.district_id);
+      if (profile.taluka_id) setTalukaId(profile.taluka_id);
+      if (profile.village_id) setVillageId(profile.village_id);
+    }
+  }, [profile, districtId]);
+
+  if (authLoading) return null;
+  if (!user) return <Navigate to="/auth" state={{ from: "/list-equipment" }} replace />;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,12 +60,13 @@ const ListEquipment = () => {
         description: formData.get("description") as string,
         price_per_hour: Number(formData.get("priceHour")),
         price_per_day: Number(formData.get("priceDay")),
-        owner_name: formData.get("ownerName") as string,
-        whatsapp: formData.get("whatsapp") as string,
+        owner_name: (formData.get("ownerName") as string) || profile?.full_name || "",
+        whatsapp: (formData.get("whatsapp") as string) || profile?.whatsapp || "",
         village_id: villageId,
         taluka_id: talukaId,
         district_id: districtId,
         quantity: Number(formData.get("quantity")) || 1,
+        owner_user_id: user.id,
       });
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
       setSubmitted(true);
@@ -82,6 +101,8 @@ const ListEquipment = () => {
     );
   }
 
+  const profileIncomplete = !profile?.full_name || !profile?.whatsapp;
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -94,6 +115,12 @@ const ListEquipment = () => {
           <p className="mt-2 text-muted-foreground">
             Add your farming equipment and start earning by renting it out
           </p>
+
+          {profileIncomplete && !profileLoading && (
+            <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm">
+              Complete your <Link to="/profile" className="font-medium text-primary underline">profile</Link> to auto-fill name, phone and location.
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -148,11 +175,11 @@ const ListEquipment = () => {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="ownerName">Your Name</Label>
-                <Input id="ownerName" name="ownerName" placeholder="Full name" required />
+                <Input id="ownerName" name="ownerName" placeholder="Full name" defaultValue={profile?.full_name || ""} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="whatsapp">WhatsApp / Phone Number</Label>
-                <Input id="whatsapp" name="whatsapp" placeholder="e.g., 919876543210" required />
+                <Input id="whatsapp" name="whatsapp" placeholder="e.g., 919876543210" defaultValue={profile?.whatsapp || ""} required />
               </div>
             </div>
 

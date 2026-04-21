@@ -1,17 +1,28 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Tractor, Menu, X } from "lucide-react";
+import { Tractor, Menu, X, LogOut, User as UserIcon } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   const links = [
     { to: "/", label: "Home" },
     { to: "/browse", label: "Browse Equipment" },
     { to: "/list-equipment", label: "List Your Equipment" },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Logged out");
+    navigate("/");
+    setMobileOpen(false);
+  };
 
   return (
     <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
@@ -35,6 +46,22 @@ const Navbar = () => {
               </Button>
             </Link>
           ))}
+          {user ? (
+            <>
+              <Link to="/profile">
+                <Button variant={location.pathname === "/profile" ? "default" : "ghost"} size="sm">
+                  <UserIcon className="mr-1 h-4 w-4" /> Profile
+                </Button>
+              </Link>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="mr-1 h-4 w-4" /> Logout
+              </Button>
+            </>
+          ) : (
+            <Link to="/auth">
+              <Button size="sm">Login / Sign Up</Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -62,6 +89,22 @@ const Navbar = () => {
               </Button>
             </Link>
           ))}
+          {user ? (
+            <>
+              <Link to="/profile" onClick={() => setMobileOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start" size="sm">
+                  <UserIcon className="mr-1 h-4 w-4" /> Profile
+                </Button>
+              </Link>
+              <Button variant="ghost" className="w-full justify-start" size="sm" onClick={handleSignOut}>
+                <LogOut className="mr-1 h-4 w-4" /> Logout
+              </Button>
+            </>
+          ) : (
+            <Link to="/auth" onClick={() => setMobileOpen(false)}>
+              <Button className="w-full" size="sm">Login / Sign Up</Button>
+            </Link>
+          )}
         </div>
       )}
     </nav>
