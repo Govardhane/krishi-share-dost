@@ -48,6 +48,7 @@ export type Database = {
           price_per_day: number
           price_per_hour: number
           quantity: number
+          taluka_id: string | null
           type: string
           updated_at: string
           village_id: string
@@ -65,6 +66,7 @@ export type Database = {
           price_per_day: number
           price_per_hour: number
           quantity?: number
+          taluka_id?: string | null
           type: string
           updated_at?: string
           village_id: string
@@ -82,6 +84,7 @@ export type Database = {
           price_per_day?: number
           price_per_hour?: number
           quantity?: number
+          taluka_id?: string | null
           type?: string
           updated_at?: string
           village_id?: string
@@ -96,6 +99,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "equipment_taluka_id_fkey"
+            columns: ["taluka_id"]
+            isOneToOne: false
+            referencedRelation: "talukas"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "equipment_village_id_fkey"
             columns: ["village_id"]
             isOneToOne: false
@@ -104,7 +114,7 @@ export type Database = {
           },
         ]
       }
-      villages: {
+      talukas: {
         Row: {
           created_at: string
           district_id: string
@@ -125,10 +135,49 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "talukas_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      villages: {
+        Row: {
+          created_at: string
+          district_id: string
+          id: string
+          name: string
+          taluka_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          district_id: string
+          id?: string
+          name: string
+          taluka_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          district_id?: string
+          id?: string
+          name?: string
+          taluka_id?: string | null
+        }
+        Relationships: [
+          {
             foreignKeyName: "villages_district_id_fkey"
             columns: ["district_id"]
             isOneToOne: false
             referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "villages_taluka_id_fkey"
+            columns: ["taluka_id"]
+            isOneToOne: false
+            referencedRelation: "talukas"
             referencedColumns: ["id"]
           },
         ]
