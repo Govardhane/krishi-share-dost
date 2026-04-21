@@ -154,6 +154,7 @@ export async function insertEquipment(equipment: {
   taluka_id: string;
   district_id: string;
   quantity: number;
+  owner_user_id: string;
 }) {
   const { data, error } = await supabase.from("equipment").insert(equipment).select();
   if (error) throw error;
