@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Search, Tractor } from "lucide-react";
-import heroImg from "@/assets/hero-farm.jpg";
+import heroImg from "@/assets/hero-equipment.jpg";
 
 const HeroSection = () => {
   return (

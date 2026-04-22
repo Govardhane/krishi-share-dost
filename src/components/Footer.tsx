@@ -1,4 +1,4 @@
-import { Tractor } from "lucide-react";
+import logo from "@/assets/farmrent-logo.png";
 
 const Footer = () => {
   return (
@@ -6,9 +6,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Tractor className="h-4 w-4 text-primary-foreground" />
-            </div>
+            <img src={logo} alt="FarmRent logo" className="h-10 w-10 object-contain" />
             <span className="font-display text-lg font-bold">FarmRent</span>
           </div>
           <p className="max-w-md text-sm text-muted-foreground">
