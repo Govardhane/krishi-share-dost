@@ -155,8 +155,20 @@ export async function insertEquipment(equipment: {
   district_id: string;
   quantity: number;
   owner_user_id: string;
+  image_url?: string | null;
 }) {
   const { data, error } = await supabase.from("equipment").insert(equipment).select();
   if (error) throw error;
   return data;
+}
+
+export async function uploadEquipmentPhoto(file: File, userId: string) {
+  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await supabase.storage
+    .from("equipment-photos")
+    .upload(path, file, { cacheControl: "3600", upsert: false });
+  if (error) throw error;
+  const { data } = supabase.storage.from("equipment-photos").getPublicUrl(path);
+  return data.publicUrl;
 }

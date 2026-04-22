@@ -92,9 +92,9 @@ const Profile = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Taluka</Label>
+                  <Label>Taluka / Sub-district</Label>
                   <Select value={talukaId} onValueChange={(v) => { setTalukaId(v); setVillageId(""); }} disabled={!districtId}>
-                    <SelectTrigger><SelectValue placeholder={districtId ? "Select taluka" : "Select district first"} /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder={districtId ? "Select taluka / sub-district" : "Select district first"} /></SelectTrigger>
                     <SelectContent>
                       {talukas?.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
                     </SelectContent>

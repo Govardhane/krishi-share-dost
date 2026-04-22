@@ -118,10 +118,10 @@ const BrowseEquipment = () => {
             disabled={districtFilter === "all"}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Taluka" />
+              <SelectValue placeholder="Taluka / Sub-district" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Talukas</SelectItem>
+              <SelectItem value="all">All Talukas / Sub-districts</SelectItem>
               {talukas?.map((t) => (
                 <SelectItem key={t.id} value={t.id}>
                   {t.name}
