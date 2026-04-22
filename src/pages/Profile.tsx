@@ -11,6 +11,7 @@ import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useDistricts, useTalukas, useVillages } from "@/lib/equipmentData";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import MyEquipmentList from "@/components/MyEquipmentList";
 
 const Profile = () => {
   const { user, loading: authLoading } = useAuth();
