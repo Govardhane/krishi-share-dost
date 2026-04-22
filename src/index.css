@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -46,8 +46,8 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* Custom tokens */
-    --font-display: 'Playfair Display', serif;
-    --font-body: 'DM Sans', sans-serif;
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
 
     --gradient-hero: linear-gradient(135deg, hsl(142 45% 28%), hsl(142 45% 20%));
     --gradient-gold: linear-gradient(135deg, hsl(38 72% 56%), hsl(30 80% 50%));
