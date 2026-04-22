@@ -1,4 +1,4 @@
-import logo from "@/assets/farmrent-logo.png";
+import logo from "@/assets/agrishare-logo.png";
 
 const Footer = () => {
   return (
