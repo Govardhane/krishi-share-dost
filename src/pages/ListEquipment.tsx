@@ -188,6 +188,39 @@ const ListEquipment = () => {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label>Equipment Photo <span className="text-xs font-normal text-muted-foreground">(optional, max 5 MB)</span></Label>
+              {photoPreview ? (
+                <div className="relative w-full overflow-hidden rounded-lg border bg-muted">
+                  <img src={photoPreview} alt="Equipment preview" className="h-56 w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={clearPhoto}
+                    className="absolute right-2 top-2 rounded-full bg-background/90 p-1.5 shadow-sm hover:bg-background"
+                    aria-label="Remove photo"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  htmlFor="photo"
+                  className="flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-muted/30 text-sm text-muted-foreground transition hover:border-primary/40 hover:bg-muted/50"
+                >
+                  <ImagePlus className="h-6 w-6" />
+                  <span>Click to upload a photo (JPG / PNG)</span>
+                </label>
+              )}
+              <input
+                id="photo"
+                name="photo"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoChange}
+              />
+            </div>
+
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="priceHour">Price per Hour (₹)</Label>
