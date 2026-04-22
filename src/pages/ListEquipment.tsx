@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment } from "@/lib/equipmentData";
+import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment, uploadEquipmentPhoto } from "@/lib/equipmentData";
 import { toast } from "sonner";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, ImagePlus, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -24,6 +24,8 @@ const ListEquipment = () => {
   const [talukaId, setTalukaId] = useState("");
   const [villageId, setVillageId] = useState("");
   const [type, setType] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const { data: districts } = useDistricts();
   const { data: talukas } = useTalukas(districtId || undefined);
@@ -54,6 +56,17 @@ const ListEquipment = () => {
 
     setLoading(true);
     try {
+      let imageUrl: string | null = null;
+      if (photoFile) {
+        try {
+          imageUrl = await uploadEquipmentPhoto(photoFile, user.id);
+        } catch (uploadErr: any) {
+          toast.error(uploadErr.message || "Photo upload failed");
+          setLoading(false);
+          return;
+        }
+      }
+
       await insertEquipment({
         name: formData.get("name") as string,
         type,
@@ -67,6 +80,7 @@ const ListEquipment = () => {
         district_id: districtId,
         quantity: Number(formData.get("quantity")) || 1,
         owner_user_id: user.id,
+        image_url: imageUrl,
       });
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
       setSubmitted(true);
@@ -76,6 +90,23 @@ const ListEquipment = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Photo must be under 5 MB");
+      return;
+    }
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const clearPhoto = () => {
+    setPhotoFile(null);
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhotoPreview(null);
   };
 
   if (submitted) {
@@ -207,7 +238,7 @@ const ListEquipment = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Taluka</Label>
+                <Label>Taluka / Sub-district</Label>
                 <Select
                   value={talukaId}
                   onValueChange={(val) => {
@@ -217,7 +248,7 @@ const ListEquipment = () => {
                   disabled={!districtId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={districtId ? "Select taluka" : "Select district first"} />
+                    <SelectValue placeholder={districtId ? "Select taluka / sub-district" : "Select district first"} />
                   </SelectTrigger>
                   <SelectContent>
                     {talukas?.map((t) => (
@@ -237,7 +268,7 @@ const ListEquipment = () => {
                   <SelectContent>
                     {villages?.length === 0 && (
                       <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                        No villages yet for this taluka
+                        No villages yet for this taluka / sub-district
                       </div>
                     )}
                     {villages?.map((v) => (
