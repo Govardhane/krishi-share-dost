@@ -162,6 +162,28 @@ export async function insertEquipment(equipment: {
   return data;
 }
 
+export function useMyEquipment(userId?: string) {
+  return useQuery({
+    queryKey: ["my-equipment", userId],
+    queryFn: async () => {
+      if (!userId) return [] as EquipmentRow[];
+      const { data, error } = await supabase
+        .from("equipment")
+        .select("*, districts(name), villages(name), talukas(name)")
+        .eq("owner_user_id", userId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as EquipmentRow[];
+    },
+    enabled: !!userId,
+  });
+}
+
+export async function deleteEquipment(id: string) {
+  const { error } = await supabase.from("equipment").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function uploadEquipmentPhoto(file: File, userId: string) {
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;

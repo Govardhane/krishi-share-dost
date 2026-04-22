@@ -11,6 +11,7 @@ import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useDistricts, useTalukas, useVillages } from "@/lib/equipmentData";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import MyEquipmentList from "@/components/MyEquipmentList";
 
 const Profile = () => {
   const { user, loading: authLoading } = useAuth();
@@ -117,6 +118,16 @@ const Profile = () => {
               </Button>
             </form>
           )}
+
+          <div className="mt-12">
+            <h2 className="font-display text-2xl font-bold text-foreground">My Equipment</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Manage equipment you've listed. Delete anything you no longer want to rent out.
+            </p>
+            <div className="mt-4">
+              <MyEquipmentList userId={user.id} />
+            </div>
+          </div>
         </div>
       </div>
       <Footer />
