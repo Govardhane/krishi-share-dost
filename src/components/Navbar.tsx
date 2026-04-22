@@ -4,7 +4,7 @@ import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import logo from "@/assets/farmrent-logo.png";
+import logo from "@/assets/agrishare-logo.png";
 
 const Navbar = () => {
   const location = useLocation();
