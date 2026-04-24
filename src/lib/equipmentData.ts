@@ -1,5 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { api, API_URL, getToken } from "./api";
 
 export interface District {
   id: string;
@@ -36,7 +36,7 @@ export interface EquipmentRow {
   quantity: number;
   image_url: string | null;
   created_at: string;
-  // joined
+  // joined client-side for backward compat
   districts?: { name: string };
   villages?: { name: string };
   talukas?: { name: string } | null;
@@ -54,17 +54,11 @@ export const equipmentTypes = [
   { value: "thresher", label: "Thresher" },
 ];
 
+// ---------- Locations ----------
 export function useDistricts() {
   return useQuery({
     queryKey: ["districts"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("districts")
-        .select("id, name, state")
-        .order("name");
-      if (error) throw error;
-      return data as District[];
-    },
+    queryFn: async () => api<District[]>("/api/districts"),
   });
 }
 
@@ -73,13 +67,7 @@ export function useTalukas(districtId?: string) {
     queryKey: ["talukas", districtId],
     queryFn: async () => {
       if (!districtId) return [] as Taluka[];
-      const { data, error } = await supabase
-        .from("talukas")
-        .select("id, name, district_id")
-        .eq("district_id", districtId)
-        .order("name");
-      if (error) throw error;
-      return data as Taluka[];
+      return await api<Taluka[]>("/api/talukas", { query: { district_id: districtId } });
     },
     enabled: !!districtId,
   });
@@ -90,18 +78,34 @@ export function useVillages(talukaId?: string) {
     queryKey: ["villages", talukaId],
     queryFn: async () => {
       if (!talukaId) return [] as Village[];
-      const { data, error } = await supabase
-        .from("villages")
-        .select("id, name, district_id, taluka_id")
-        .eq("taluka_id", talukaId)
-        .order("name");
-      if (error) throw error;
-      return data as Village[];
+      return await api<Village[]>("/api/villages", { query: { taluka_id: talukaId } });
     },
     enabled: !!talukaId,
   });
 }
 
+// ---------- Helpers to join location names client-side ----------
+async function joinNames(rows: EquipmentRow[]): Promise<EquipmentRow[]> {
+  if (!rows.length) return rows;
+  const [districts, allTalukas, allVillages] = await Promise.all([
+    api<District[]>("/api/districts"),
+    api<Taluka[]>("/api/talukas"),
+    api<Village[]>("/api/villages"),
+  ]);
+  const dMap = new Map(districts.map((d) => [d.id, d]));
+  const tMap = new Map(allTalukas.map((t) => [t.id, t]));
+  const vMap = new Map(allVillages.map((v) => [v.id, v]));
+
+  return rows.map((r) => ({
+    ...r,
+    available: !!r.available,
+    districts: dMap.get(r.district_id) ? { name: dMap.get(r.district_id)!.name } : undefined,
+    villages: vMap.get(r.village_id) ? { name: vMap.get(r.village_id)!.name } : undefined,
+    talukas: r.taluka_id && tMap.get(r.taluka_id) ? { name: tMap.get(r.taluka_id)!.name } : null,
+  }));
+}
+
+// ---------- Equipment ----------
 export function useEquipment(filters?: {
   type?: string;
   districtId?: string;
@@ -112,32 +116,25 @@ export function useEquipment(filters?: {
   return useQuery({
     queryKey: ["equipment", filters],
     queryFn: async () => {
-      let query = supabase
-        .from("equipment")
-        .select("*, districts(name), villages(name), talukas(name)")
-        .order("created_at", { ascending: false });
+      const query: Record<string, string | undefined> = {};
+      if (filters?.type && filters.type !== "all") query.type = filters.type;
+      if (filters?.districtId && filters.districtId !== "all") query.district_id = filters.districtId;
+      if (filters?.talukaId && filters.talukaId !== "all") query.taluka_id = filters.talukaId;
+      if (filters?.villageId && filters.villageId !== "all") query.village_id = filters.villageId;
 
-      if (filters?.type && filters.type !== "all") {
-        query = query.eq("type", filters.type);
-      }
-      if (filters?.districtId && filters.districtId !== "all") {
-        query = query.eq("district_id", filters.districtId);
-      }
-      if (filters?.talukaId && filters.talukaId !== "all") {
-        query = query.eq("taluka_id", filters.talukaId);
-      }
-      if (filters?.villageId && filters.villageId !== "all") {
-        query = query.eq("village_id", filters.villageId);
-      }
+      let rows = await api<EquipmentRow[]>("/api/equipment", { query });
+
+      // Client-side text search (backend does location filtering only)
       if (filters?.search) {
-        query = query.or(
-          `name.ilike.%${filters.search}%,owner_name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`
+        const q = filters.search.toLowerCase();
+        rows = rows.filter(
+          (r) =>
+            r.name.toLowerCase().includes(q) ||
+            r.owner_name.toLowerCase().includes(q) ||
+            (r.description ?? "").toLowerCase().includes(q)
         );
       }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as EquipmentRow[];
+      return await joinNames(rows);
     },
   });
 }
@@ -157,9 +154,11 @@ export async function insertEquipment(equipment: {
   owner_user_id: string;
   image_url?: string | null;
 }) {
-  const { data, error } = await supabase.from("equipment").insert(equipment).select();
-  if (error) throw error;
-  return data;
+  return await api<EquipmentRow>("/api/equipment", {
+    method: "POST",
+    body: equipment,
+    auth: true,
+  });
 }
 
 export function useMyEquipment(userId?: string) {
@@ -167,30 +166,36 @@ export function useMyEquipment(userId?: string) {
     queryKey: ["my-equipment", userId],
     queryFn: async () => {
       if (!userId) return [] as EquipmentRow[];
-      const { data, error } = await supabase
-        .from("equipment")
-        .select("*, districts(name), villages(name), talukas(name)")
-        .eq("owner_user_id", userId)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data as EquipmentRow[];
+      const rows = await api<EquipmentRow[]>("/api/equipment/mine", { auth: true });
+      return await joinNames(rows);
     },
     enabled: !!userId,
   });
 }
 
 export async function deleteEquipment(id: string) {
-  const { error } = await supabase.from("equipment").delete().eq("id", id);
-  if (error) throw error;
+  await api(`/api/equipment/${id}`, { method: "DELETE", auth: true });
 }
 
-export async function uploadEquipmentPhoto(file: File, userId: string) {
-  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage
-    .from("equipment-photos")
-    .upload(path, file, { cacheControl: "3600", upsert: false });
-  if (error) throw error;
-  const { data } = supabase.storage.from("equipment-photos").getPublicUrl(path);
-  return data.publicUrl;
+export async function uploadEquipmentPhoto(file: File, _userId: string) {
+  const fd = new FormData();
+  fd.append("photo", file);
+  const token = getToken();
+  const res = await fetch(`${API_URL}/api/upload`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body: fd,
+  });
+  if (!res.ok) {
+    let msg = "Upload failed";
+    try {
+      const j = await res.json();
+      if (j?.error) msg = j.error;
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg);
+  }
+  const data = (await res.json()) as { url: string };
+  return data.url;
 }
