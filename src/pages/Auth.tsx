@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -20,7 +19,7 @@ const phoneSchema = z.string().trim().min(10, "Phone required").max(15);
 const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, loading } = useAuth();
+  const { user, loading, signIn, signUp } = useAuth();
   const [busy, setBusy] = useState(false);
 
   const from = (location.state as { from?: string })?.from || "/";
@@ -36,8 +35,7 @@ const Auth = () => {
       const email = emailSchema.parse(form.get("email"));
       const password = passwordSchema.parse(form.get("password"));
       setBusy(true);
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      await signIn(email, password);
       toast.success("Welcome back!");
     } catch (err: any) {
       toast.error(err.message || "Login failed");
@@ -55,16 +53,8 @@ const Auth = () => {
       const email = emailSchema.parse(form.get("email"));
       const password = passwordSchema.parse(form.get("password"));
       setBusy(true);
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-          data: { full_name, whatsapp },
-        },
-      });
-      if (error) throw error;
-      toast.success("Account created! You can now complete your profile.");
+      await signUp({ email, password, full_name, whatsapp });
+      toast.success("Account created! Complete your profile next.");
     } catch (err: any) {
       toast.error(err.message || "Sign up failed");
     } finally {
