@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { api, getStoredUser, getToken, setStoredUser, setToken, AuthUser } from "@/lib/api";
+import type { Session, User } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthCtx {
-  user: AuthUser | null;
-  // session kept for compatibility with existing components
-  session: { user: AuthUser } | null;
+  user: User | null;
+  session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (data: {
@@ -26,24 +26,30 @@ const AuthContext = createContext<AuthCtx>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = getToken();
-    const stored = getStoredUser();
-    if (token && stored) setUser(stored);
-    setLoading(false);
+    // Set up listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
+    });
+
+    // THEN check existing session
+    supabase.auth.getSession().then(({ data: { session: existing } }) => {
+      setSession(existing);
+      setUser(existing?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const res = await api<{ token: string; user: AuthUser }>("/api/auth/login", {
-      method: "POST",
-      body: { email, password },
-    });
-    setToken(res.token);
-    setStoredUser(res.user);
-    setUser(res.user);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   };
 
   const signUp = async (data: {
@@ -52,32 +58,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     full_name: string;
     whatsapp: string;
   }) => {
-    const res = await api<{ token: string; user: AuthUser }>("/api/auth/signup", {
-      method: "POST",
-      body: data,
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+        data: {
+          full_name: data.full_name,
+          whatsapp: data.whatsapp,
+        },
+      },
     });
-    setToken(res.token);
-    setStoredUser(res.user);
-    setUser(res.user);
+    if (error) throw error;
   };
 
   const signOut = async () => {
-    setToken(null);
-    setStoredUser(null);
-    setUser(null);
+    await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        session: user ? { user } : null,
-        loading,
-        signIn,
-        signUp,
-        signOut,
-      }}
-    >
+    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

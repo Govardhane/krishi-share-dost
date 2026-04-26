@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "./useAuth";
 
@@ -18,7 +18,13 @@ export function useProfile() {
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       if (!user) return null;
-      return await api<Profile | null>("/api/profile", { auth: true });
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data as Profile | null;
     },
     enabled: !!user,
   });
@@ -30,11 +36,31 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: async (updates: Partial<Profile>) => {
       if (!user) throw new Error("Not authenticated");
-      return await api<Profile>("/api/profile", {
-        method: "PUT",
-        body: updates,
-        auth: true,
-      });
+      // Try update first; if no row, insert.
+      const { data: existing } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (existing) {
+        const { data, error } = await supabase
+          .from("profiles")
+          .update(updates)
+          .eq("user_id", user.id)
+          .select()
+          .single();
+        if (error) throw error;
+        return data as Profile;
+      } else {
+        const { data, error } = await supabase
+          .from("profiles")
+          .insert({ user_id: user.id, ...updates })
+          .select()
+          .single();
+        if (error) throw error;
+        return data as Profile;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["profile"] });
