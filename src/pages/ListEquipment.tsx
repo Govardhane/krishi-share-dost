@@ -81,7 +81,18 @@ const ListEquipment = () => {
         quantity: Number(formData.get("quantity")) || 1,
         owner_user_id: user.id,
         image_url: imageUrl,
+        brand: (formData.get("brand") as string) || null,
+        model: (formData.get("model") as string) || null,
+        hp: formData.get("hp") ? Number(formData.get("hp")) : null,
+        tractor_class: tractorClass || null,
+        year_of_purchase: formData.get("year") ? Number(formData.get("year")) : null,
+        condition: condition || null,
+        features,
+        payment_modes: paymentModes.length ? paymentModes : ["advance_cash"],
+        advance_percent: Number(formData.get("advancePercent")) || 0,
+        upi_id: (formData.get("upiId") as string) || null,
       });
+
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
       setSubmitted(true);
       toast.success("Equipment listed successfully!");
