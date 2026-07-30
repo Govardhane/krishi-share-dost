@@ -6,13 +6,15 @@ import EquipmentCard from "@/components/EquipmentCard";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEquipment, useDistricts, useTalukas, useVillages, equipmentTypes } from "@/lib/equipmentData";
-import { Search, MapPin, Loader2 } from "lucide-react";
+import { Search, MapPin, Loader2, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 
 const BrowseEquipment = () => {
-  const { user } = useAuth();
-  const { data: profile } = useProfile();
+  const { user, loading: authLoading } = useAuth();
+  const { data: profile, isLoading: profileLoading } = useProfile();
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -21,11 +23,11 @@ const BrowseEquipment = () => {
   const [villageFilter, setVillageFilter] = useState("all");
   const [appliedDefault, setAppliedDefault] = useState(false);
 
-  // Default-filter to user's taluka after profile loads (one time)
+  // Lock browsing to the user's own area (district + taluka) once profile loads
   useEffect(() => {
-    if (!appliedDefault && profile?.district_id && profile?.taluka_id) {
+    if (!appliedDefault && profile?.district_id) {
       setDistrictFilter(profile.district_id);
-      setTalukaFilter(profile.taluka_id);
+      if (profile.taluka_id) setTalukaFilter(profile.taluka_id);
       setAppliedDefault(true);
     }
   }, [profile, appliedDefault]);
@@ -33,6 +35,7 @@ const BrowseEquipment = () => {
   const { data: districts } = useDistricts();
   const { data: talukas } = useTalukas(districtFilter !== "all" ? districtFilter : undefined);
   const { data: villages } = useVillages(talukaFilter !== "all" ? talukaFilter : undefined);
+  const hasArea = !!profile?.district_id;
   const { data: equipment, isLoading } = useEquipment({
     type: typeFilter,
     districtId: districtFilter,
@@ -41,7 +44,49 @@ const BrowseEquipment = () => {
     search: search || undefined,
   });
 
-  const filtered = equipment || [];
+  const filtered = user && hasArea ? equipment || [] : [];
+
+  if (authLoading) return null;
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center px-4 text-center">
+          <Lock className="h-10 w-10 text-primary" />
+          <h1 className="mt-4 font-display text-3xl font-bold text-foreground">Login to browse equipment</h1>
+          <p className="mt-3 text-muted-foreground">
+            Rental listings sirf logged-in farmers ko dikhte hain — aur aapko sirf aapke apne area ka equipment
+            dikhaya jayega.
+          </p>
+          <Link to="/auth" className="mt-6">
+            <Button size="lg">Login / Register</Button>
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!profileLoading && !hasArea) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center px-4 text-center">
+          <MapPin className="h-10 w-10 text-primary" />
+          <h1 className="mt-4 font-display text-3xl font-bold text-foreground">Set your location first</h1>
+          <p className="mt-3 text-muted-foreground">
+            Apna district, taluka aur village profile me save karein — uske baad aapke area ka available equipment
+            dikhne lagega.
+          </p>
+          <Link to="/profile" className="mt-6">
+            <Button size="lg">Go to Profile</Button>
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -49,22 +94,17 @@ const BrowseEquipment = () => {
 
       <div className="container mx-auto px-4 py-10">
         <h1 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
-          Browse Equipment
+          Equipment near you
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Search by district, taluka, village or equipment type
+          Aapke taluka ka available equipment — best value (rating + features vs rate) sabse upar
         </p>
 
-        {!user && (
-          <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
-            <Link to="/auth" className="font-medium text-primary underline">Login</Link> to automatically see equipment available in your taluka.
-          </div>
-        )}
-        {user && profile?.taluka_id && appliedDefault && talukaFilter === profile.taluka_id && (
-          <div className="mt-4 rounded-lg border bg-card p-3 text-sm text-muted-foreground">
-            Showing equipment in your taluka. Change filters below to browse other areas.
-          </div>
-        )}
+        <div className="mt-4 rounded-lg border bg-card p-3 text-sm text-muted-foreground">
+          Showing equipment in your saved area. Filters se aap apne district ke doosre taluka / village bhi dekh
+          sakte hain.
+        </div>
+
 
         {/* Filters */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -160,8 +200,8 @@ const BrowseEquipment = () => {
           </div>
         ) : (
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((eq) => (
-              <EquipmentCard key={eq.id} equipment={eq} />
+            {filtered.map((eq, i) => (
+              <EquipmentCard key={eq.id} equipment={eq} rank={i} />
             ))}
           </div>
         )}

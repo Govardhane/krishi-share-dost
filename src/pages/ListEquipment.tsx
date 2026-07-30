@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment, uploadEquipmentPhoto } from "@/lib/equipmentData";
+import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment, uploadEquipmentPhoto, tractorClasses, featureOptions, paymentModeOptions } from "@/lib/equipmentData";
 import { toast } from "sonner";
 import { CheckCircle, Loader2, ImagePlus, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -24,8 +24,16 @@ const ListEquipment = () => {
   const [talukaId, setTalukaId] = useState("");
   const [villageId, setVillageId] = useState("");
   const [type, setType] = useState("");
+  const [tractorClass, setTractorClass] = useState("");
+  const [condition, setCondition] = useState("good");
+  const [features, setFeatures] = useState<string[]>([]);
+  const [paymentModes, setPaymentModes] = useState<string[]>(["advance_cash"]);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  const toggle = (list: string[], set: (v: string[]) => void, val: string) =>
+    set(list.includes(val) ? list.filter((v) => v !== val) : [...list, val]);
+
 
   const { data: districts } = useDistricts();
   const { data: talukas } = useTalukas(districtId || undefined);
@@ -81,7 +89,18 @@ const ListEquipment = () => {
         quantity: Number(formData.get("quantity")) || 1,
         owner_user_id: user.id,
         image_url: imageUrl,
+        brand: (formData.get("brand") as string) || null,
+        model: (formData.get("model") as string) || null,
+        hp: formData.get("hp") ? Number(formData.get("hp")) : null,
+        tractor_class: tractorClass || null,
+        year_of_purchase: formData.get("year") ? Number(formData.get("year")) : null,
+        condition: condition || null,
+        features,
+        payment_modes: paymentModes.length ? paymentModes : ["advance_cash"],
+        advance_percent: Number(formData.get("advancePercent")) || 0,
+        upi_id: (formData.get("upiId") as string) || null,
       });
+
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
       setSubmitted(true);
       toast.success("Equipment listed successfully!");
@@ -161,7 +180,15 @@ const ListEquipment = () => {
               </div>
               <div className="space-y-2">
                 <Label>Equipment Type</Label>
-                <Select value={type} onValueChange={setType} required>
+                <Select
+                  value={type}
+                  onValueChange={(v) => {
+                    setType(v);
+                    if (v === "tractor_small") setTractorClass("small");
+                    else if (v === "tractor_big") setTractorClass("big");
+                  }}
+                  required
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
@@ -177,6 +204,114 @@ const ListEquipment = () => {
                 </Select>
               </div>
             </div>
+
+            {/* Tractor size guide */}
+            {type.startsWith("tractor") && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {tractorClasses.map((c) => (
+                  <button
+                    key={c.value}
+                    type="button"
+                    onClick={() => setTractorClass(c.value)}
+                    className={`rounded-lg border p-3 text-left transition ${
+                      tractorClass === c.value ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
+                    }`}
+                  >
+                    <p className="font-display text-base font-semibold text-foreground">🚜 {c.label}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">HP Range: {c.hp}</p>
+                    <p className="text-xs text-muted-foreground">Farm Size: {c.farm}</p>
+                    <p className="text-xs text-muted-foreground">Usage: {c.usage}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Machine details */}
+            <div className="grid gap-4 sm:grid-cols-4">
+              <div className="space-y-2">
+                <Label htmlFor="brand">Brand</Label>
+                <Input id="brand" name="brand" placeholder="Mahindra" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="model">Model</Label>
+                <Input id="model" name="model" placeholder="575 DI XP Plus" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="hp">HP</Label>
+                <Input id="hp" name="hp" type="number" placeholder="45" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="year">Year</Label>
+                <Input id="year" name="year" type="number" placeholder="2021" />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Condition</Label>
+              <Select value={condition} onValueChange={setCondition}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">Like new</SelectItem>
+                  <SelectItem value="good">Good</SelectItem>
+                  <SelectItem value="average">Average</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Features</Label>
+              <div className="flex flex-wrap gap-2">
+                {featureOptions.map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => toggle(features, setFeatures, f)}
+                    className={`rounded-full border px-3 py-1.5 text-xs transition ${
+                      features.includes(f)
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Payment options you accept</Label>
+              <div className="flex flex-wrap gap-2">
+                {paymentModeOptions.map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => toggle(paymentModes, setPaymentModes, m.value)}
+                    className={`rounded-full border px-3 py-1.5 text-xs transition ${
+                      paymentModes.includes(m.value)
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-2 grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="advancePercent">Advance required (%)</Label>
+                  <Input id="advancePercent" name="advancePercent" type="number" placeholder="20" defaultValue="0" />
+                </div>
+                {paymentModes.includes("upi") && (
+                  <div className="space-y-2">
+                    <Label htmlFor="upiId">Your UPI ID</Label>
+                    <Input id="upiId" name="upiId" placeholder="name@okaxis" />
+                  </div>
+                )}
+              </div>
+            </div>
+
 
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
