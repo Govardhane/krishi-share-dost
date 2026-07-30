@@ -29,8 +29,8 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-3">
-          <img src={logo} alt="AgriShare Now logo" className="h-14 w-14 object-contain drop-shadow-sm" />
-          <span className="font-display text-2xl font-bold tracking-tight text-foreground">AgriShare <span className="text-secondary">Now</span></span>
+          <img src={logo} alt="AI- Agrishare logo" className="h-14 w-14 object-contain drop-shadow-sm" />
+          <span className="font-display text-2xl font-bold tracking-tight text-foreground">AI- <span className="text-secondary">Agrishare</span></span>
         </Link>
 
         {/* Desktop */}

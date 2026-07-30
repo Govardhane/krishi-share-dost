@@ -21,7 +21,7 @@ const HeroSection = () => {
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-secondary/40 bg-secondary/20 px-4 py-1.5 text-sm text-primary-foreground backdrop-blur-sm">
             <Tractor className="h-4 w-4" />
-            India's Agricultural Equipment Marketplace
+            India's AI-Powered Agricultural Marketplace
           </div>
 
           <h1 className="mt-6 font-display text-4xl font-extrabold leading-tight text-primary-foreground sm:text-5xl lg:text-6xl">
