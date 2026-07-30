@@ -24,8 +24,16 @@ const ListEquipment = () => {
   const [talukaId, setTalukaId] = useState("");
   const [villageId, setVillageId] = useState("");
   const [type, setType] = useState("");
+  const [tractorClass, setTractorClass] = useState("");
+  const [condition, setCondition] = useState("good");
+  const [features, setFeatures] = useState<string[]>([]);
+  const [paymentModes, setPaymentModes] = useState<string[]>(["advance_cash"]);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  const toggle = (list: string[], set: (v: string[]) => void, val: string) =>
+    set(list.includes(val) ? list.filter((v) => v !== val) : [...list, val]);
+
 
   const { data: districts } = useDistricts();
   const { data: talukas } = useTalukas(districtId || undefined);
