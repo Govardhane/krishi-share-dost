@@ -14,6 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          advance_amount: number
+          created_at: string
+          duration_unit: string
+          duration_value: number
+          equipment_id: string
+          id: string
+          notes: string | null
+          owner_user_id: string | null
+          payment_mode: string
+          payment_ref: string | null
+          payment_status: string
+          renter_name: string
+          renter_phone: string
+          renter_user_id: string
+          start_date: string
+          status: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          advance_amount?: number
+          created_at?: string
+          duration_unit?: string
+          duration_value?: number
+          equipment_id: string
+          id?: string
+          notes?: string | null
+          owner_user_id?: string | null
+          payment_mode?: string
+          payment_ref?: string | null
+          payment_status?: string
+          renter_name: string
+          renter_phone: string
+          renter_user_id: string
+          start_date: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          advance_amount?: number
+          created_at?: string
+          duration_unit?: string
+          duration_value?: number
+          equipment_id?: string
+          id?: string
+          notes?: string | null
+          owner_user_id?: string | null
+          payment_mode?: string
+          payment_ref?: string | null
+          payment_status?: string
+          renter_name?: string
+          renter_phone?: string
+          renter_user_id?: string
+          start_date?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       districts: {
         Row: {
           created_at: string
@@ -37,61 +108,97 @@ export type Database = {
       }
       equipment: {
         Row: {
+          advance_percent: number
           available: boolean
+          brand: string | null
+          condition: string | null
           created_at: string
           description: string | null
           district_id: string
+          features: string[]
+          hp: number | null
           id: string
           image_url: string | null
+          model: string | null
           name: string
           owner_name: string
           owner_user_id: string | null
+          payment_modes: string[]
           price_per_day: number
           price_per_hour: number
           quantity: number
+          rating: number
+          rating_count: number
           taluka_id: string | null
+          tractor_class: string | null
           type: string
           updated_at: string
+          upi_id: string | null
           village_id: string
           whatsapp: string
+          year_of_purchase: number | null
         }
         Insert: {
+          advance_percent?: number
           available?: boolean
+          brand?: string | null
+          condition?: string | null
           created_at?: string
           description?: string | null
           district_id: string
+          features?: string[]
+          hp?: number | null
           id?: string
           image_url?: string | null
+          model?: string | null
           name: string
           owner_name: string
           owner_user_id?: string | null
+          payment_modes?: string[]
           price_per_day: number
           price_per_hour: number
           quantity?: number
+          rating?: number
+          rating_count?: number
           taluka_id?: string | null
+          tractor_class?: string | null
           type: string
           updated_at?: string
+          upi_id?: string | null
           village_id: string
           whatsapp: string
+          year_of_purchase?: number | null
         }
         Update: {
+          advance_percent?: number
           available?: boolean
+          brand?: string | null
+          condition?: string | null
           created_at?: string
           description?: string | null
           district_id?: string
+          features?: string[]
+          hp?: number | null
           id?: string
           image_url?: string | null
+          model?: string | null
           name?: string
           owner_name?: string
           owner_user_id?: string | null
+          payment_modes?: string[]
           price_per_day?: number
           price_per_hour?: number
           quantity?: number
+          rating?: number
+          rating_count?: number
           taluka_id?: string | null
+          tractor_class?: string | null
           type?: string
           updated_at?: string
+          upi_id?: string | null
           village_id?: string
           whatsapp?: string
+          year_of_purchase?: number | null
         }
         Relationships: [
           {
