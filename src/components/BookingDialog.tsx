@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { EquipmentRow, createBooking, paymentModeOptions } from "@/lib/equipmentData";
+import UpiPayButtons from "@/components/UpiPayButtons";
+import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
@@ -33,6 +35,7 @@ const modeIcon: Record<string, typeof Banknote> = {
 
 const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
   const { user } = useAuth();
+  const { t } = useLang();
   const { data: profile } = useProfile();
   const navigate = useNavigate();
 
@@ -264,32 +267,42 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
               </div>
 
               {mode === "upi" && (
-                <div className="rounded-lg border bg-muted/40 p-3 text-sm">
-                  <p className="font-medium text-foreground">UPI ID: {equipment.upi_id || "Ask owner on WhatsApp"}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Pay ₹{total} from any UPI app (GPay / PhonePe / Paytm), then paste the transaction ID below.
-                  </p>
-                  <Input
-                    className="mt-3"
-                    placeholder="UPI transaction ID"
-                    value={payRef}
-                    onChange={(e) => setPayRef(e.target.value)}
+                <div className="space-y-3">
+                  <UpiPayButtons
+                    upiId={equipment.upi_id}
+                    payeeName={equipment.owner_name}
+                    amount={total}
+                    note={`AI-Agrishare ${equipment.name}`}
                   />
+                  <div>
+                    <Label className="text-xs text-muted-foreground">{t("pay.afterPay")}</Label>
+                    <Input
+                      className="mt-1.5"
+                      placeholder="UPI transaction ID"
+                      value={payRef}
+                      onChange={(e) => setPayRef(e.target.value)}
+                    />
+                  </div>
                 </div>
               )}
 
               {mode === "online" && (
-                <div className="rounded-lg border bg-muted/40 p-3 text-sm">
-                  <p className="text-xs text-muted-foreground">
-                    Online card / netbanking gateway is not live yet. Enter your payment reference after paying the
-                    owner, or choose UPI / Advance Cash.
-                  </p>
-                  <Input
-                    className="mt-3"
-                    placeholder="Payment reference number"
-                    value={payRef}
-                    onChange={(e) => setPayRef(e.target.value)}
+                <div className="space-y-3">
+                  <UpiPayButtons
+                    upiId={equipment.upi_id}
+                    payeeName={equipment.owner_name}
+                    amount={total}
+                    note={`AI-Agrishare ${equipment.name}`}
                   />
+                  <div>
+                    <Label className="text-xs text-muted-foreground">{t("pay.afterPay")}</Label>
+                    <Input
+                      className="mt-1.5"
+                      placeholder="Payment reference number"
+                      value={payRef}
+                      onChange={(e) => setPayRef(e.target.value)}
+                    />
+                  </div>
                 </div>
               )}
 

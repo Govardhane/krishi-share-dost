@@ -1,16 +1,18 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import HowItWorks from "@/components/HowItWorks";
-import UpcomingFeatures from "@/components/UpcomingFeatures";
+import PlatformFeatures from "@/components/PlatformFeatures";
 import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <HeroSection />
-      <HowItWorks />
-      <UpcomingFeatures />
+      <main>
+        <HeroSection />
+        <HowItWorks />
+        <PlatformFeatures />
+      </main>
       <Footer />
     </div>
   );
