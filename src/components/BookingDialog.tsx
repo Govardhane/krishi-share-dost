@@ -287,17 +287,22 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
               )}
 
               {mode === "online" && (
-                <div className="rounded-lg border bg-muted/40 p-3 text-sm">
-                  <p className="text-xs text-muted-foreground">
-                    Online card / netbanking gateway is not live yet. Enter your payment reference after paying the
-                    owner, or choose UPI / Advance Cash.
-                  </p>
-                  <Input
-                    className="mt-3"
-                    placeholder="Payment reference number"
-                    value={payRef}
-                    onChange={(e) => setPayRef(e.target.value)}
+                <div className="space-y-3">
+                  <UpiPayButtons
+                    upiId={equipment.upi_id}
+                    payeeName={equipment.owner_name}
+                    amount={total}
+                    note={`AI-Agrishare ${equipment.name}`}
                   />
+                  <div>
+                    <Label className="text-xs text-muted-foreground">{t("pay.afterPay")}</Label>
+                    <Input
+                      className="mt-1.5"
+                      placeholder="Payment reference number"
+                      value={payRef}
+                      onChange={(e) => setPayRef(e.target.value)}
+                    />
+                  </div>
                 </div>
               )}
 
