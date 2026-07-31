@@ -264,17 +264,22 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
               </div>
 
               {mode === "upi" && (
-                <div className="rounded-lg border bg-muted/40 p-3 text-sm">
-                  <p className="font-medium text-foreground">UPI ID: {equipment.upi_id || "Ask owner on WhatsApp"}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Pay ₹{total} from any UPI app (GPay / PhonePe / Paytm), then paste the transaction ID below.
-                  </p>
-                  <Input
-                    className="mt-3"
-                    placeholder="UPI transaction ID"
-                    value={payRef}
-                    onChange={(e) => setPayRef(e.target.value)}
+                <div className="space-y-3">
+                  <UpiPayButtons
+                    upiId={equipment.upi_id}
+                    payeeName={equipment.owner_name}
+                    amount={total}
+                    note={`AI-Agrishare ${equipment.name}`}
                   />
+                  <div>
+                    <Label className="text-xs text-muted-foreground">{t("pay.afterPay")}</Label>
+                    <Input
+                      className="mt-1.5"
+                      placeholder="UPI transaction ID"
+                      value={payRef}
+                      onChange={(e) => setPayRef(e.target.value)}
+                    />
+                  </div>
                 </div>
               )}
 
