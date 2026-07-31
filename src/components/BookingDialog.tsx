@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { EquipmentRow, createBooking, paymentModeOptions } from "@/lib/equipmentData";
+import UpiPayButtons from "@/components/UpiPayButtons";
+import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
@@ -33,6 +35,7 @@ const modeIcon: Record<string, typeof Banknote> = {
 
 const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
   const { user } = useAuth();
+  const { t } = useLang();
   const { data: profile } = useProfile();
   const navigate = useNavigate();
 
