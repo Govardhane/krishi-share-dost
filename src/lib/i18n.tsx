@@ -104,16 +104,18 @@ export const baseDict: Dict = {
   "pay.desktopHint": { en: "On desktop? Scan the QR from your phone's UPI app.", mr: "डेस्कटॉपवर आहात? फोनच्या यूपीआय अ‍ॅपने QR स्कॅन करा." },
 };
 
+export const dict: Dict = { ...baseDict, ...cardsDict, ...bookingDict, ...formsDict };
+
 interface Ctx {
   lang: Lang;
   setLang: (l: Lang) => void;
-  t: (key: keyof typeof dict | string) => string;
+  t: (key: string) => string;
 }
 
 const LanguageContext = createContext<Ctx>({ lang: "en", setLang: () => {}, t: (k) => String(k) });
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [lang, setLangState] = useState<Lang>(() => (localStorage.getItem("lang") as Lang) || "en");
+  const [lang, setLangState] = useState<Lang>(() => (localStorage.getItem("lang") as Lang) || "mr");
 
   useEffect(() => {
     localStorage.setItem("lang", lang);
@@ -121,6 +123,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   }, [lang]);
 
   const t = (key: string) => dict[key]?.[lang] ?? key;
+
 
   return (
     <LanguageContext.Provider value={{ lang, setLang: setLangState, t }}>
