@@ -1,71 +1,93 @@
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Search, Tractor } from "lucide-react";
-import heroImg from "@/assets/hero-equipment.jpg";
+import { ArrowRight, Search, Tractor, CloudSun, Sparkles, PawPrint, Newspaper, Users } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+
+const cards = [
+  { key: "c1", icon: Tractor, to: "/browse", tint: "bg-tint-1 text-tint-1-foreground", chip: "bg-tint-1-foreground/15" },
+  { key: "c2", icon: Search, to: "/list-equipment", tint: "bg-tint-2 text-tint-2-foreground", chip: "bg-tint-2-foreground/10" },
+  { key: "c3", icon: Sparkles, to: "/#features", tint: "bg-tint-3 text-tint-3-foreground", chip: "bg-tint-3-foreground/10" },
+  { key: "c4", icon: CloudSun, to: "/#features", tint: "bg-tint-4 text-tint-4-foreground", chip: "bg-tint-4-foreground/10" },
+  { key: "c5", icon: PawPrint, to: "/#features", tint: "bg-tint-5 text-tint-5-foreground", chip: "bg-tint-5-foreground/10" },
+  { key: "c6", icon: Newspaper, to: "/#features", tint: "bg-tint-6 text-tint-6-foreground", chip: "bg-tint-6-foreground/10" },
+];
 
 const HeroSection = () => {
   const { t } = useLang();
 
   return (
-    <section className="relative min-h-[85vh] overflow-hidden">
-      <div className="absolute inset-0">
-        <img
-          src={heroImg}
-          alt="Indian farming landscape at golden hour"
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent" />
-      </div>
+    <section className="relative overflow-hidden bg-band-soft">
+      <div className="absolute inset-0 bg-[image:var(--gradient-band)]" />
 
-      <div className="container relative z-10 mx-auto flex min-h-[85vh] items-center px-4 py-16">
-        <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-secondary/40 bg-secondary/20 px-4 py-1.5 text-sm text-primary-foreground backdrop-blur-sm">
+      <div className="container relative mx-auto px-4 py-10 sm:py-14">
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-2 rounded-full bg-band px-4 py-1.5 text-xs font-semibold text-band-foreground sm:text-sm">
             <Tractor className="h-4 w-4" />
             {t("hero.badge")}
           </div>
 
-          <h1 className="mt-6 font-display text-4xl font-extrabold leading-tight text-primary-foreground sm:text-5xl lg:text-6xl">
-            {t("hero.title1")} <span className="text-gradient-gold">{t("hero.title2")}</span>{" "}
-            {t("hero.title3")}
+          <h1 className="mt-5 font-display text-3xl font-extrabold leading-tight text-foreground sm:text-4xl lg:text-5xl">
+            {t("hero.title1")} <span className="text-band">{t("hero.title2")}</span> {t("hero.title3")}
           </h1>
 
-          <p className="mt-5 max-w-xl font-display text-lg font-semibold text-secondary sm:text-xl">
+          <p className="mt-4 max-w-2xl font-display text-base font-semibold text-band sm:text-lg">
             {t("hero.tagline")}
           </p>
+          <p className="mt-3 max-w-2xl text-sm text-foreground/70 sm:text-base">{t("hero.sub")}</p>
 
-          <p className="mt-4 max-w-lg text-base text-primary-foreground/80">{t("hero.sub")}</p>
-
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/browse">
-              <Button variant="hero" size="lg" className="text-base">
-                <Search className="h-5 w-5" />
-                {t("hero.cta1")}
-              </Button>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              to="/browse"
+              className="inline-flex items-center gap-2 rounded-md bg-band px-5 py-3 text-sm font-bold text-band-foreground shadow-card transition hover:opacity-90"
+            >
+              <Search className="h-4 w-4" /> {t("hero.cta1")}
             </Link>
-            <Link to="/list-equipment">
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-primary-foreground/40 bg-transparent text-base text-primary-foreground backdrop-blur-sm hover:bg-primary-foreground/10 hover:text-primary-foreground"
-              >
-                {t("hero.cta2")}
-              </Button>
+            <Link
+              to="/list-equipment"
+              className="inline-flex items-center gap-2 rounded-md bg-secondary px-5 py-3 text-sm font-bold text-secondary-foreground shadow-card transition hover:opacity-90"
+            >
+              {t("hero.cta2")} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+        </div>
 
-          <div className="mt-10 flex gap-8">
-            {[
-              { num: "500+", label: t("hero.stat1") },
-              { num: "200+", label: t("hero.stat2") },
-              { num: "1000+", label: t("hero.stat3") },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <p className="font-display text-2xl font-bold text-secondary">{stat.num}</p>
-                <p className="text-xs text-primary-foreground/60">{stat.label}</p>
+        {/* Quick action cards */}
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {cards.map((card) => (
+            <Link
+              key={card.key}
+              to={card.to}
+              className={`group flex flex-col rounded-xl p-5 shadow-card transition hover:-translate-y-1 hover:shadow-elevated ${card.tint}`}
+            >
+              <span className={`flex h-12 w-12 items-center justify-center rounded-full ${card.chip}`}>
+                <card.icon className="h-6 w-6" />
+              </span>
+              <h2 className="mt-4 font-display text-base font-bold leading-snug">
+                {t(`hero.${card.key}.t`)}
+              </h2>
+              <p className="mt-2 text-xs leading-relaxed opacity-80">{t(`hero.${card.key}.d`)}</p>
+              <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold">
+                {t("hero.explore")}
+                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Stats strip */}
+        <div className="mt-10 grid gap-4 rounded-xl bg-background/80 p-6 backdrop-blur-sm sm:grid-cols-3">
+          {[
+            { num: "500+", label: t("hero.stat1"), icon: Tractor },
+            { num: "200+", label: t("hero.stat2"), icon: Users },
+            { num: "1000+", label: t("hero.stat3"), icon: Sparkles },
+          ].map((stat) => (
+            <div key={stat.label} className="flex items-center gap-3">
+              <stat.icon className="h-6 w-6 text-band" />
+              <div>
+                <p className="font-display text-2xl font-bold text-band">{stat.num}</p>
+                <p className="text-xs text-muted-foreground">{stat.label}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
