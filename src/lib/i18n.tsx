@@ -5,6 +5,11 @@ export type Lang = "en" | "mr";
 type Dict = Record<string, { en: string; mr: string }>;
 
 export const dict: Dict = {
+  // Top bar / brand
+  "top.whatsapp": { en: "WhatsApp Helpdesk -", mr: "व्हॉट्सअ‍ॅप मदत केंद्र -" },
+  "top.helpline": { en: "Farmer Helpline -", mr: "शेतकरी मदत क्रमांक -" },
+  "brand.sub": { en: "Smart Farming Platform", mr: "स्मार्ट शेती व्यासपीठ" },
+
   // Nav
   "nav.home": { en: "Home", mr: "मुख्यपृष्ठ" },
   "nav.browse": { en: "Browse Equipment", mr: "अवजारे शोधा" },
@@ -12,6 +17,22 @@ export const dict: Dict = {
   "nav.profile": { en: "Profile", mr: "प्रोफाइल" },
   "nav.logout": { en: "Logout", mr: "बाहेर पडा" },
   "nav.login": { en: "Login / Sign Up", mr: "लॉगिन / नोंदणी" },
+
+  // Quick action cards
+  "hero.explore": { en: "Explore Now", mr: "आता पहा" },
+  "hero.c1.t": { en: "Rent Equipment", mr: "अवजार भाड्याने घ्या" },
+  "hero.c1.d": { en: "Book tractors & implements from verified owners near you.", mr: "जवळच्या खात्रीशीर मालकांकडून ट्रॅक्टर व अवजारे बुक करा." },
+  "hero.c2.t": { en: "List Your Equipment", mr: "तुमचे अवजार नोंदवा" },
+  "hero.c2.d": { en: "Earn extra income by renting out idle machinery.", mr: "रिकाम्या अवजारांतून जादा कमाई करा." },
+  "hero.c3.t": { en: "Kisan AI Assistant", mr: "किसान एआय सहाय्यक" },
+  "hero.c3.d": { en: "24x7 crop, pest and scheme guidance in Marathi.", mr: "पीक, कीड व योजनांचे २४x७ मराठीत मार्गदर्शन." },
+  "hero.c4.t": { en: "Weather Alerts", mr: "हवामान अलर्ट" },
+  "hero.c4.d": { en: "Rainfall and spraying-window updates for your taluka.", mr: "तुमच्या तालुक्यासाठी पाऊस व फवारणी वेळेचे अपडेट." },
+  "hero.c5.t": { en: "Livestock Care", mr: "पशुधन काळजी" },
+  "hero.c5.d": { en: "Animal health, vaccination and biosecurity records.", mr: "जनावरांचे आरोग्य, लसीकरण व सुरक्षा नोंदी." },
+  "hero.c6.t": { en: "News & Schemes", mr: "बातम्या व योजना" },
+  "hero.c6.d": { en: "Mandi rates, subsidies and government scheme updates.", mr: "बाजारभाव, अनुदान व शासकीय योजनांचे अपडेट." },
+
 
   // Hero
   "hero.badge": { en: "India's AI-Powered Agricultural Platform", mr: "भारताचे एआय-आधारित शेती व्यासपीठ" },
