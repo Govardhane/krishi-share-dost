@@ -51,6 +51,26 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        band: {
+          DEFAULT: "hsl(var(--band))",
+          foreground: "hsl(var(--band-foreground))",
+          strong: "hsl(var(--band-strong))",
+          soft: "hsl(var(--band-soft))",
+        },
+        tint: {
+          1: "hsl(var(--tint-1))",
+          "1-foreground": "hsl(var(--tint-1-foreground))",
+          2: "hsl(var(--tint-2))",
+          "2-foreground": "hsl(var(--tint-2-foreground))",
+          3: "hsl(var(--tint-3))",
+          "3-foreground": "hsl(var(--tint-3-foreground))",
+          4: "hsl(var(--tint-4))",
+          "4-foreground": "hsl(var(--tint-4-foreground))",
+          5: "hsl(var(--tint-5))",
+          "5-foreground": "hsl(var(--tint-5-foreground))",
+          6: "hsl(var(--tint-6))",
+          "6-foreground": "hsl(var(--tint-6-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -61,6 +81,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+
       },
       borderRadius: {
         lg: "var(--radius)",
