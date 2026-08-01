@@ -9,15 +9,15 @@ interface Props {
   note: string;
 }
 
-const apps = [
-  { key: "phonepe", label: "PhonePe", scheme: "phonepe://pay", color: "bg-[#5f259f]" },
-  { key: "gpay", label: "Google Pay", scheme: "tez://upi/pay", color: "bg-[#1a73e8]" },
-  { key: "paytm", label: "Paytm", scheme: "paytmmp://pay", color: "bg-[#00baf2]" },
-  { key: "any", label: "Any UPI App", scheme: "upi://pay", color: "bg-primary" },
-];
-
 const UpiPayButtons = ({ upiId, payeeName, amount, note }: Props) => {
   const { t } = useLang();
+
+  const apps = [
+    { key: "phonepe", label: t("pay2.phonepe"), scheme: "phonepe://pay", color: "bg-[#5f259f]" },
+    { key: "gpay", label: t("pay2.gpay"), scheme: "tez://upi/pay", color: "bg-[#1a73e8]" },
+    { key: "paytm", label: t("pay2.paytm"), scheme: "paytmmp://pay", color: "bg-[#00baf2]" },
+    { key: "any", label: t("pay2.anyUpiApp"), scheme: "upi://pay", color: "bg-primary" },
+  ];
 
   if (!upiId) {
     return (
@@ -61,8 +61,8 @@ const UpiPayButtons = ({ upiId, payeeName, amount, note }: Props) => {
         <summary className="flex cursor-pointer items-center gap-1.5">
           <QrCode className="h-3.5 w-3.5" /> {t("pay.desktopHint")}
         </summary>
-        <img src={qrSrc} alt="UPI QR code for payment" className="mt-2 h-40 w-40 rounded-md border bg-background p-1" />
-        <p className="mt-1">UPI ID: {upiId}</p>
+        <img src={qrSrc} alt={t("pay2.qrAlt")} className="mt-2 h-40 w-40 rounded-md border bg-background p-1" />
+        <p className="mt-1">{t("pay2.upiIdLabel").replace("{id}", upiId)}</p>
       </details>
     </div>
   );

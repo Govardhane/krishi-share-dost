@@ -1,0 +1,84 @@
+import { Dict } from "./i18n-types";
+
+// Equipment card + browse page strings
+export const cardsDict: Dict = {
+  // EquipmentCard
+  "card.bestValue": { en: "Best Value", mr: "सर्वोत्तम किंमत" },
+  "card.available": { en: "Available", mr: "उपलब्ध" },
+  "card.unavailable": { en: "Unavailable", mr: "अनुपलब्ध" },
+  "card.hp": { en: "HP", mr: "एचपी" },
+  "card.model": { en: "Model:", mr: "मॉडेल:" },
+  "card.classSmall": { en: "Small Tractor · 11–40 HP", mr: "लहान ट्रॅक्टर · ११–४० एचपी" },
+  "card.classBig": { en: "Big Tractor · 50–130+ HP", mr: "मोठा ट्रॅक्टर · ५०–१३०+ एचपी" },
+  "card.quantity": { en: "Quantity:", mr: "प्रमाण:" },
+  "card.perHour": { en: "/hr", mr: "/तास" },
+  "card.perDay": { en: "/day", mr: "/दिवस" },
+  "card.payment": { en: "Payment:", mr: "पेमेंट:" },
+  "card.payAdvanceCash": { en: "Advance Cash", mr: "आगाऊ रोख" },
+  "card.payUpi": { en: "UPI", mr: "यूपीआय" },
+  "card.payOnline": { en: "Online", mr: "ऑनलाइन" },
+  "card.advance": { en: "advance", mr: "आगाऊ" },
+  "card.more": { en: "more", mr: "अधिक" },
+  "card.bookNow": { en: "Book Now", mr: "आत्ता बुक करा" },
+  "card.whatsapp": { en: "WhatsApp", mr: "व्हॉट्सअ‍ॅप" },
+  "card.call": { en: "Call", mr: "कॉल करा" },
+  "card.sms": { en: "SMS", mr: "एसएमएस" },
+  "card.imgAlt": { en: "available for rent in", mr: "भाड्याने उपलब्ध, गाव" },
+  "card.whatsappMsgBooking": {
+    en: "Hi {owner}, I'm interested in renting your {name}. Is it available?",
+    mr: "नमस्कार {owner}, मला तुमचे {name} भाड्याने घ्यायचे आहे. ते उपलब्ध आहे का?",
+  },
+  "card.smsMsgBooking": {
+    en: "Hi {owner}, I'm interested in renting your {name}.",
+    mr: "नमस्कार {owner}, मला तुमचे {name} भाड्याने घ्यायचे आहे.",
+  },
+
+  // MyEquipmentList
+  "my.deleted": { en: "Equipment deleted", mr: "अवजार हटवले" },
+  "my.deleteFailed": { en: "Failed to delete", mr: "हटवण्यात अयशस्वी" },
+  "my.empty": { en: "You haven't listed any equipment yet.", mr: "तुम्ही अजून कोणतेही अवजार नोंदवलेले नाही." },
+  "my.available": { en: "Available", mr: "उपलब्ध" },
+  "my.unavailable": { en: "Unavailable", mr: "अनुपलब्ध" },
+  "my.qty": { en: "Qty:", mr: "प्रमाण:" },
+  "my.deleteAria": { en: "Delete", mr: "हटवा" },
+  "my.deleteTitle": { en: "Delete this equipment?", mr: "हे अवजार हटवायचे आहे का?" },
+  "my.deleteDesc": {
+    en: "will be permanently removed from the marketplace. This action cannot be undone.",
+    mr: "बाजारपेठेतून कायमचे काढून टाकले जाईल. ही क्रिया पूर्ववत करता येणार नाही.",
+  },
+  "my.cancel": { en: "Cancel", mr: "रद्द करा" },
+  "my.delete": { en: "Delete", mr: "हटवा" },
+
+  // BrowseEquipment
+  "browse.loginTitle": { en: "Login to browse equipment", mr: "अवजारे पाहण्यासाठी लॉगिन करा" },
+  "browse.loginDesc": {
+    en: "Rental listings are visible only to logged-in farmers — and you'll only see equipment from your own area.",
+    mr: "भाड्याची यादी फक्त लॉगिन केलेल्या शेतकऱ्यांना दिसते — आणि तुम्हाला फक्त तुमच्या स्वतःच्या भागातील अवजारे दिसतील.",
+  },
+  "browse.loginBtn": { en: "Login / Register", mr: "लॉगिन / नोंदणी" },
+  "browse.setLocationTitle": { en: "Set your location first", mr: "आधी तुमचे स्थान सेट करा" },
+  "browse.setLocationDesc": {
+    en: "Save your district, taluka and village in profile — then available equipment in your area will show up.",
+    mr: "तुमचा जिल्हा, तालुका आणि गाव प्रोफाइलमध्ये जतन करा — त्यानंतर तुमच्या भागातील उपलब्ध अवजारे दिसू लागतील.",
+  },
+  "browse.goToProfile": { en: "Go to Profile", mr: "प्रोफाइलवर जा" },
+  "browse.title": { en: "Equipment near you", mr: "तुमच्या जवळील अवजारे" },
+  "browse.subtitle": {
+    en: "Available equipment in your taluka — best value (rating + features vs rate) shown first",
+    mr: "तुमच्या तालुक्यातील उपलब्ध अवजारे — सर्वोत्तम मूल्य (रेटिंग + वैशिष्ट्ये विरुद्ध दर) सर्वात वर",
+  },
+  "browse.savedAreaNote": {
+    en: "Showing equipment in your saved area. Use filters to see other talukas / villages in your district too.",
+    mr: "तुमच्या जतन केलेल्या भागातील अवजारे दाखवली आहेत. फिल्टर वापरून तुमच्या जिल्ह्यातील इतर तालुका / गावेही पाहू शकता.",
+  },
+  "browse.searchPlaceholder": { en: "Search by name...", mr: "नावाने शोधा..." },
+  "browse.equipmentType": { en: "Equipment Type", mr: "अवजाराचा प्रकार" },
+  "browse.district": { en: "District", mr: "जिल्हा" },
+  "browse.allDistricts": { en: "All Districts", mr: "सर्व जिल्हे" },
+  "browse.talukaPlaceholder": { en: "Taluka / Sub-district", mr: "तालुका / उपजिल्हा" },
+  "browse.allTalukas": { en: "All Talukas / Sub-districts", mr: "सर्व तालुके / उपजिल्हे" },
+  "browse.village": { en: "Village", mr: "गाव" },
+  "browse.allVillages": { en: "All Villages", mr: "सर्व गावे" },
+  "browse.foundSuffix": { en: "equipment found", mr: "अवजारे सापडली" },
+  "browse.noResults": { en: "No equipment found. Try a different search or filter.", mr: "कोणतेही अवजार सापडले नाही. वेगळा शोध किंवा फिल्टर वापरून पहा." },
+};

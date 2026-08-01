@@ -1,11 +1,14 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { Dict } from "./i18n-types";
+import { cardsDict } from "./i18n-cards";
+import { bookingDict } from "./i18n-booking";
+import { formsDict } from "./i18n-forms";
 
 export type Lang = "en" | "mr";
 
-type Dict = Record<string, { en: string; mr: string }>;
-
-export const dict: Dict = {
+export const baseDict: Dict = {
   // Top bar / brand
+
   "top.whatsapp": { en: "WhatsApp Helpdesk -", mr: "व्हॉट्सअ‍ॅप मदत केंद्र -" },
   "top.helpline": { en: "Farmer Helpline -", mr: "शेतकरी मदत क्रमांक -" },
   "brand.sub": { en: "Smart Farming Platform", mr: "स्मार्ट शेती व्यासपीठ" },
@@ -101,16 +104,18 @@ export const dict: Dict = {
   "pay.desktopHint": { en: "On desktop? Scan the QR from your phone's UPI app.", mr: "डेस्कटॉपवर आहात? फोनच्या यूपीआय अ‍ॅपने QR स्कॅन करा." },
 };
 
+export const dict: Dict = { ...baseDict, ...cardsDict, ...bookingDict, ...formsDict };
+
 interface Ctx {
   lang: Lang;
   setLang: (l: Lang) => void;
-  t: (key: keyof typeof dict | string) => string;
+  t: (key: string) => string;
 }
 
 const LanguageContext = createContext<Ctx>({ lang: "en", setLang: () => {}, t: (k) => String(k) });
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [lang, setLangState] = useState<Lang>(() => (localStorage.getItem("lang") as Lang) || "en");
+  const [lang, setLangState] = useState<Lang>(() => (localStorage.getItem("lang") as Lang) || "mr");
 
   useEffect(() => {
     localStorage.setItem("lang", lang);
@@ -118,6 +123,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   }, [lang]);
 
   const t = (key: string) => dict[key]?.[lang] ?? key;
+
 
   return (
     <LanguageContext.Provider value={{ lang, setLang: setLangState, t }}>

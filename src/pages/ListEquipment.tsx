@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment, uploadEquipmentPhoto, tractorClasses, featureOptions, paymentModeOptions } from "@/lib/equipmentData";
+import { useLang } from "@/lib/i18n";
 import { toast } from "sonner";
 import { CheckCircle, Loader2, ImagePlus, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -17,6 +18,7 @@ import { useProfile } from "@/hooks/useProfile";
 const ListEquipment = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
+  const { t } = useLang();
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ const ListEquipment = () => {
     const formData = new FormData(form);
 
     if (!districtId || !talukaId || !villageId || !type) {
-      toast.error("Please select district, taluka, village and equipment type");
+      toast.error(t("list.selectRequired"));
       return;
     }
 
@@ -69,7 +71,7 @@ const ListEquipment = () => {
         try {
           imageUrl = await uploadEquipmentPhoto(photoFile, user.id);
         } catch (uploadErr: any) {
-          toast.error(uploadErr.message || "Photo upload failed");
+          toast.error(uploadErr.message || t("list.photoUploadFailed"));
           setLoading(false);
           return;
         }
@@ -103,9 +105,9 @@ const ListEquipment = () => {
 
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
       setSubmitted(true);
-      toast.success("Equipment listed successfully!");
+      toast.success(t("list.listedSuccess"));
     } catch (err: any) {
-      toast.error(err.message || "Failed to list equipment");
+      toast.error(err.message || t("list.listFailed"));
     } finally {
       setLoading(false);
     }
@@ -115,7 +117,7 @@ const ListEquipment = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Photo must be under 5 MB");
+      toast.error(t("list.photoSizeError"));
       return;
     }
     setPhotoFile(file);
@@ -137,13 +139,13 @@ const ListEquipment = () => {
             <CheckCircle className="h-10 w-10 text-primary-foreground" />
           </div>
           <h2 className="mt-6 font-display text-3xl font-bold text-foreground">
-            Equipment Listed!
+            {t("list.listedHeading")}
           </h2>
           <p className="mt-3 max-w-md text-muted-foreground">
-            Your equipment is now visible to farmers in your area. They'll contact you via WhatsApp, Call or SMS.
+            {t("list.listedDesc")}
           </p>
           <Button className="mt-6" onClick={() => setSubmitted(false)}>
-            List Another Equipment
+            {t("list.listAnother")}
           </Button>
         </div>
         <Footer />
@@ -160,26 +162,26 @@ const ListEquipment = () => {
       <div className="container mx-auto px-4 py-10">
         <div className="mx-auto max-w-2xl">
           <h1 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
-            List Your Equipment
+            {t("list.title")}
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Add your farming equipment and start earning by renting it out
+            {t("list.subtitle")}
           </p>
 
           {profileIncomplete && !profileLoading && (
             <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm">
-              Complete your <Link to="/profile" className="font-medium text-primary underline">profile</Link> to auto-fill name, phone and location.
+              {t("list.completeProfile1")} <Link to="/profile" className="font-medium text-primary underline">{t("list.completeProfile2")}</Link> {t("list.completeProfile3")}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="name">Equipment Name</Label>
-                <Input id="name" name="name" placeholder="e.g., Mahindra 575 DI" required />
+                <Label htmlFor="name">{t("list.equipmentName")}</Label>
+                <Input id="name" name="name" placeholder={t("list.equipmentNamePh")} required />
               </div>
               <div className="space-y-2">
-                <Label>Equipment Type</Label>
+                <Label>{t("list.equipmentType")}</Label>
                 <Select
                   value={type}
                   onValueChange={(v) => {
@@ -190,14 +192,14 @@ const ListEquipment = () => {
                   required
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue placeholder={t("list.selectType")} />
                   </SelectTrigger>
                   <SelectContent>
                     {equipmentTypes
-                      .filter((t) => t.value !== "all")
-                      .map((t) => (
-                        <SelectItem key={t.value} value={t.value}>
-                          {t.label}
+                      .filter((tp) => tp.value !== "all")
+                      .map((tp) => (
+                        <SelectItem key={tp.value} value={tp.value}>
+                          {t(`list.type.${tp.value}`)}
                         </SelectItem>
                       ))}
                   </SelectContent>
@@ -217,10 +219,10 @@ const ListEquipment = () => {
                       tractorClass === c.value ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
                     }`}
                   >
-                    <p className="font-display text-base font-semibold text-foreground">🚜 {c.label}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">HP Range: {c.hp}</p>
-                    <p className="text-xs text-muted-foreground">Farm Size: {c.farm}</p>
-                    <p className="text-xs text-muted-foreground">Usage: {c.usage}</p>
+                    <p className="font-display text-base font-semibold text-foreground">🚜 {t(`list.class.${c.value}.label`)}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{t("list.hpRange")} {t(`list.class.${c.value}.hp`)}</p>
+                    <p className="text-xs text-muted-foreground">{t("list.farmSize")} {t(`list.class.${c.value}.farm`)}</p>
+                    <p className="text-xs text-muted-foreground">{t("list.usage")} {t(`list.class.${c.value}.usage`)}</p>
                   </button>
                 ))}
               </div>
@@ -229,39 +231,39 @@ const ListEquipment = () => {
             {/* Machine details */}
             <div className="grid gap-4 sm:grid-cols-4">
               <div className="space-y-2">
-                <Label htmlFor="brand">Brand</Label>
+                <Label htmlFor="brand">{t("list.brand")}</Label>
                 <Input id="brand" name="brand" placeholder="Mahindra" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="model">Model</Label>
+                <Label htmlFor="model">{t("list.model")}</Label>
                 <Input id="model" name="model" placeholder="575 DI XP Plus" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="hp">HP</Label>
+                <Label htmlFor="hp">{t("list.hp")}</Label>
                 <Input id="hp" name="hp" type="number" placeholder="45" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="year">Year</Label>
+                <Label htmlFor="year">{t("list.year")}</Label>
                 <Input id="year" name="year" type="number" placeholder="2021" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Condition</Label>
+              <Label>{t("list.condition")}</Label>
               <Select value={condition} onValueChange={setCondition}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="new">Like new</SelectItem>
-                  <SelectItem value="good">Good</SelectItem>
-                  <SelectItem value="average">Average</SelectItem>
+                  <SelectItem value="new">{t("list.condition.new")}</SelectItem>
+                  <SelectItem value="good">{t("list.condition.good")}</SelectItem>
+                  <SelectItem value="average">{t("list.condition.average")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>Features</Label>
+              <Label>{t("list.features")}</Label>
               <div className="flex flex-wrap gap-2">
                 {featureOptions.map((f) => (
                   <button
@@ -274,14 +276,14 @@ const ListEquipment = () => {
                         : "border-border text-muted-foreground hover:bg-muted"
                     }`}
                   >
-                    {f}
+                    {t(`list.feature.${f}`)}
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Payment options you accept</Label>
+              <Label>{t("list.paymentOptions")}</Label>
               <div className="flex flex-wrap gap-2">
                 {paymentModeOptions.map((m) => (
                   <button
@@ -294,18 +296,18 @@ const ListEquipment = () => {
                         : "border-border text-muted-foreground hover:bg-muted"
                     }`}
                   >
-                    {m.label}
+                    {t(`list.pay.${m.value}`)}
                   </button>
                 ))}
               </div>
               <div className="mt-2 grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="advancePercent">Advance required (%)</Label>
+                  <Label htmlFor="advancePercent">{t("list.advanceRequired")}</Label>
                   <Input id="advancePercent" name="advancePercent" type="number" placeholder="20" defaultValue="0" />
                 </div>
                 {paymentModes.includes("upi") && (
                   <div className="space-y-2">
-                    <Label htmlFor="upiId">Your UPI ID</Label>
+                    <Label htmlFor="upiId">{t("list.upiId")}</Label>
                     <Input id="upiId" name="upiId" placeholder="name@okaxis" />
                   </div>
                 )}
@@ -314,17 +316,17 @@ const ListEquipment = () => {
 
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t("list.description")}</Label>
               <Textarea
                 id="description"
                 name="description"
-                placeholder="Describe your equipment condition, features, etc."
+                placeholder={t("list.descriptionPh")}
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Equipment Photo <span className="text-xs font-normal text-muted-foreground">(optional, max 5 MB)</span></Label>
+              <Label>{t("list.equipmentPhoto")} <span className="text-xs font-normal text-muted-foreground">{t("list.optionalMax5mb")}</span></Label>
               {photoPreview ? (
                 <div className="relative w-full overflow-hidden rounded-lg border bg-muted">
                   <img src={photoPreview} alt="Equipment preview" className="h-56 w-full object-cover" />
@@ -332,7 +334,7 @@ const ListEquipment = () => {
                     type="button"
                     onClick={clearPhoto}
                     className="absolute right-2 top-2 rounded-full bg-background/90 p-1.5 shadow-sm hover:bg-background"
-                    aria-label="Remove photo"
+                    aria-label={t("list.removePhoto")}
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -343,7 +345,7 @@ const ListEquipment = () => {
                   className="flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-muted/30 text-sm text-muted-foreground transition hover:border-primary/40 hover:bg-muted/50"
                 >
                   <ImagePlus className="h-6 w-6" />
-                  <span>Click to upload a photo (JPG / PNG)</span>
+                  <span>{t("list.clickUpload")}</span>
                 </label>
               )}
               <input
@@ -358,33 +360,33 @@ const ListEquipment = () => {
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="priceHour">Price per Hour (₹)</Label>
+                <Label htmlFor="priceHour">{t("list.pricePerHour")}</Label>
                 <Input id="priceHour" name="priceHour" type="number" placeholder="500" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="priceDay">Price per Day (₹)</Label>
+                <Label htmlFor="priceDay">{t("list.pricePerDay")}</Label>
                 <Input id="priceDay" name="priceDay" type="number" placeholder="3500" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="quantity">Available Quantity</Label>
+                <Label htmlFor="quantity">{t("list.availableQty")}</Label>
                 <Input id="quantity" name="quantity" type="number" placeholder="1" defaultValue="1" required />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="ownerName">Your Name</Label>
-                <Input id="ownerName" name="ownerName" placeholder="Full name" defaultValue={profile?.full_name || ""} required />
+                <Label htmlFor="ownerName">{t("list.yourName")}</Label>
+                <Input id="ownerName" name="ownerName" placeholder={t("list.fullNamePh")} defaultValue={profile?.full_name || ""} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="whatsapp">WhatsApp / Phone Number</Label>
+                <Label htmlFor="whatsapp">{t("list.whatsappPhoneNumber")}</Label>
                 <Input id="whatsapp" name="whatsapp" placeholder="e.g., 919876543210" defaultValue={profile?.whatsapp || ""} required />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label>District</Label>
+                <Label>{t("list.district")}</Label>
                 <Select
                   value={districtId}
                   onValueChange={(val) => {
@@ -394,7 +396,7 @@ const ListEquipment = () => {
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select district" />
+                    <SelectValue placeholder={t("list.selectDistrict")} />
                   </SelectTrigger>
                   <SelectContent>
                     {districts?.map((d) => (
@@ -406,7 +408,7 @@ const ListEquipment = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Taluka / Sub-district</Label>
+                <Label>{t("list.talukaSub")}</Label>
                 <Select
                   value={talukaId}
                   onValueChange={(val) => {
@@ -416,27 +418,27 @@ const ListEquipment = () => {
                   disabled={!districtId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={districtId ? "Select taluka / sub-district" : "Select district first"} />
+                    <SelectValue placeholder={districtId ? t("list.selectTaluka") : t("list.selectDistrictFirst")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {talukas?.map((t) => (
-                      <SelectItem key={t.id} value={t.id}>
-                        {t.name}
+                    {talukas?.map((tk) => (
+                      <SelectItem key={tk.id} value={tk.id}>
+                        {tk.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Village</Label>
+                <Label>{t("list.village")}</Label>
                 <Select value={villageId} onValueChange={setVillageId} disabled={!talukaId}>
                   <SelectTrigger>
-                    <SelectValue placeholder={talukaId ? "Select village" : "Select taluka first"} />
+                    <SelectValue placeholder={talukaId ? t("list.selectVillage") : t("list.selectTalukaFirst")} />
                   </SelectTrigger>
                   <SelectContent>
                     {villages?.length === 0 && (
                       <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                        No villages yet for this taluka / sub-district
+                        {t("list.noVillages")}
                       </div>
                     )}
                     {villages?.map((v) => (
@@ -451,7 +453,7 @@ const ListEquipment = () => {
 
             <Button type="submit" size="lg" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              List Equipment
+              {t("list.listEquipment")}
             </Button>
           </form>
         </div>
