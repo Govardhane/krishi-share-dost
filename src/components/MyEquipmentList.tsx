@@ -107,7 +107,7 @@ const MyEquipmentList = ({ userId }: { userId: string }) => {
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <IndianRupee className="h-3 w-3" />
-                  {eq.price_per_hour}/hr · {eq.price_per_day}/day
+                  {eq.price_per_hour}{t("card.perHour")} · {eq.price_per_day}{t("card.perDay")}
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <Package className="h-3 w-3" />
