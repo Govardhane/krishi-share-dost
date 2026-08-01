@@ -49,11 +49,33 @@
     --font-display: 'Fraunces', serif;
     --font-body: 'Plus Jakarta Sans', sans-serif;
 
+    /* Gov-portal style bands */
+    --band: 142 55% 24%;
+    --band-foreground: 60 40% 96%;
+    --band-strong: 142 60% 17%;
+    --band-soft: 110 45% 82%;
+
+    /* Tinted quick-action cards */
+    --tint-1: 142 45% 28%;
+    --tint-1-foreground: 60 40% 96%;
+    --tint-2: 38 85% 92%;
+    --tint-2-foreground: 30 60% 25%;
+    --tint-3: 165 55% 92%;
+    --tint-3-foreground: 168 55% 22%;
+    --tint-4: 265 55% 95%;
+    --tint-4-foreground: 265 45% 30%;
+    --tint-5: 10 75% 95%;
+    --tint-5-foreground: 8 55% 32%;
+    --tint-6: 330 70% 95%;
+    --tint-6-foreground: 330 55% 32%;
+
     --gradient-hero: linear-gradient(135deg, hsl(142 45% 28%), hsl(142 45% 20%));
     --gradient-gold: linear-gradient(135deg, hsl(38 72% 56%), hsl(30 80% 50%));
+    --gradient-band: linear-gradient(180deg, hsl(110 48% 80%), hsl(96 45% 90%));
     --shadow-card: 0 4px 24px -4px hsl(150 25% 12% / 0.08);
     --shadow-elevated: 0 12px 40px -8px hsl(150 25% 12% / 0.15);
   }
+
 
   .dark {
     --background: 150 25% 8%;
