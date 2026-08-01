@@ -1,11 +1,14 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { Dict } from "./i18n-types";
+import { cardsDict } from "./i18n-cards";
+import { bookingDict } from "./i18n-booking";
+import { formsDict } from "./i18n-forms";
 
 export type Lang = "en" | "mr";
 
-type Dict = Record<string, { en: string; mr: string }>;
-
-export const dict: Dict = {
+export const baseDict: Dict = {
   // Top bar / brand
+
   "top.whatsapp": { en: "WhatsApp Helpdesk -", mr: "व्हॉट्सअ‍ॅप मदत केंद्र -" },
   "top.helpline": { en: "Farmer Helpline -", mr: "शेतकरी मदत क्रमांक -" },
   "brand.sub": { en: "Smart Farming Platform", mr: "स्मार्ट शेती व्यासपीठ" },
