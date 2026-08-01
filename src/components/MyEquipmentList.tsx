@@ -16,6 +16,7 @@ import { Loader2, Trash2, MapPin, IndianRupee, Package } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useLang } from "@/lib/i18n";
 import tractorImg from "@/assets/tractor.jpg";
 import rotavatorImg from "@/assets/rotavator.jpg";
 import harvesterImg from "@/assets/harvester.jpg";
@@ -27,6 +28,7 @@ const typeImages: Record<string, string> = {
 };
 
 const MyEquipmentList = ({ userId }: { userId: string }) => {
+  const { t } = useLang();
   const { data: items, isLoading } = useMyEquipment(userId);
   const queryClient = useQueryClient();
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -39,9 +41,9 @@ const MyEquipmentList = ({ userId }: { userId: string }) => {
         queryClient.invalidateQueries({ queryKey: ["my-equipment", userId] }),
         queryClient.invalidateQueries({ queryKey: ["equipment"] }),
       ]);
-      toast.success("Equipment deleted");
+      toast.success(t("my.deleted"));
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete");
+      toast.error(err.message || t("my.deleteFailed"));
     } finally {
       setDeletingId(null);
     }
@@ -58,7 +60,7 @@ const MyEquipmentList = ({ userId }: { userId: string }) => {
   if (!items || items.length === 0) {
     return (
       <div className="rounded-lg border border-dashed bg-muted/30 p-6 text-center text-sm text-muted-foreground">
-        You haven't listed any equipment yet.
+        {t("my.empty")}
       </div>
     );
   }
@@ -94,7 +96,7 @@ const MyEquipmentList = ({ userId }: { userId: string }) => {
                       : "border-destructive/30 text-destructive"
                   }
                 >
-                  {eq.available ? "Available" : "Unavailable"}
+                  {eq.available ? t("my.available") : t("my.unavailable")}
                 </Badge>
               </div>
               <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
@@ -109,7 +111,7 @@ const MyEquipmentList = ({ userId }: { userId: string }) => {
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <Package className="h-3 w-3" />
-                  Qty: {eq.quantity}
+                  {t("my.qty")} {eq.quantity}
                 </span>
               </div>
             </div>
@@ -120,7 +122,7 @@ const MyEquipmentList = ({ userId }: { userId: string }) => {
                   size="icon"
                   className="shrink-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
                   disabled={deletingId === eq.id}
-                  aria-label={`Delete ${eq.name}`}
+                  aria-label={`${t("my.deleteAria")} ${eq.name}`}
                 >
                   {deletingId === eq.id ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -131,19 +133,18 @@ const MyEquipmentList = ({ userId }: { userId: string }) => {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete this equipment?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("my.deleteTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    "{eq.name}" will be permanently removed from the marketplace.
-                    This action cannot be undone.
+                    "{eq.name}" {t("my.deleteDesc")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>{t("my.cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => handleDelete(eq.id)}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    Delete
+                    {t("my.delete")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

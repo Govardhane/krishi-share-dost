@@ -3,6 +3,7 @@ import { EquipmentRow } from "@/lib/equipmentData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import BookingDialog from "@/components/BookingDialog";
+import { useLang } from "@/lib/i18n";
 import {
   MapPin,
   Clock,
@@ -29,12 +30,12 @@ const typeImages: Record<string, string> = {
   harvester: harvesterImg,
 };
 
-const classLabel: Record<string, string> = {
-  small: "Small Tractor · 11–40 HP",
-  big: "Big Tractor · 50–130+ HP",
-};
-
 const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: number }) => {
+  const { t } = useLang();
+  const classLabel: Record<string, string> = {
+    small: t("card.classSmall"),
+    big: t("card.classBig"),
+  };
   const [bookingOpen, setBookingOpen] = useState(false);
   const image = equipment.image_url || typeImages[equipment.type] || tractorImg;
   const villageName = equipment.villages?.name || "";
@@ -46,7 +47,9 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
 
   const handleWhatsApp = () => {
     const message = encodeURIComponent(
-      `Hi ${equipment.owner_name}, I'm interested in renting your ${equipment.name}. Is it available?`
+      t("card.whatsappMsgBooking")
+        .replace("{owner}", equipment.owner_name)
+        .replace("{name}", equipment.name)
     );
     window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
   };
@@ -57,7 +60,9 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
 
   const handleSMS = () => {
     const message = encodeURIComponent(
-      `Hi ${equipment.owner_name}, I'm interested in renting your ${equipment.name}.`
+      t("card.smsMsgBooking")
+        .replace("{owner}", equipment.owner_name)
+        .replace("{name}", equipment.name)
     );
     window.location.href = `sms:+${phone}?body=${message}`;
   };
@@ -67,13 +72,13 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={image}
-          alt={`${equipment.brand || ""} ${equipment.name} available for rent in ${villageName}`}
+          alt={`${equipment.brand || ""} ${equipment.name} ${t("card.imgAlt")} ${villageName}`}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
         {rank === 0 && (
           <Badge className="absolute left-3 top-3 gap-1 bg-secondary text-secondary-foreground">
-            <Award className="h-3 w-3" /> Best Value
+            <Award className="h-3 w-3" /> {t("card.bestValue")}
           </Badge>
         )}
         <Badge
@@ -83,7 +88,7 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
               : "bg-destructive text-destructive-foreground"
           }`}
         >
-          {equipment.available ? "Available" : "Unavailable"}
+          {equipment.available ? t("card.available") : t("card.unavailable")}
         </Badge>
       </div>
 
@@ -111,12 +116,12 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
           {equipment.hp && (
             <Badge variant="outline" className="gap-1 text-[11px]">
               <Gauge className="h-3 w-3" />
-              {equipment.hp} HP
+              {equipment.hp} {t("card.hp")}
             </Badge>
           )}
           {equipment.model && (
             <Badge variant="outline" className="text-[11px]">
-              Model: {equipment.model}
+              {t("card.model")} {equipment.model}
             </Badge>
           )}
           {equipment.year_of_purchase && (
@@ -141,7 +146,7 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
               </span>
             ))}
             {features.length > 4 && (
-              <span className="text-[11px] text-muted-foreground">+{features.length - 4} more</span>
+              <span className="text-[11px] text-muted-foreground">+{features.length - 4} {t("card.more")}</span>
             )}
           </div>
         )}
@@ -161,7 +166,7 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
           </div>
           <div className="flex items-center gap-1.5">
             <Package className="h-3.5 w-3.5 shrink-0" />
-            <span>Quantity: {equipment.quantity}</span>
+            <span>{t("card.quantity")} {equipment.quantity}</span>
           </div>
         </div>
 
@@ -170,24 +175,24 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
             <Clock className="h-3.5 w-3.5 text-secondary" />
             <span className="text-sm font-semibold text-card-foreground">
               <IndianRupee className="inline h-3 w-3" />
-              {equipment.price_per_hour}/hr
+              {equipment.price_per_hour}{t("card.perHour")}
             </span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-sm text-muted-foreground">
               <IndianRupee className="inline h-3 w-3" />
-              {equipment.price_per_day}/day
+              {equipment.price_per_day}{t("card.perDay")}
             </span>
           </div>
         </div>
 
         {equipment.payment_modes?.length > 0 && (
           <p className="mt-2 text-[11px] text-muted-foreground">
-            Payment:{" "}
+            {t("card.payment")}{" "}
             {equipment.payment_modes
-              .map((m) => (m === "advance_cash" ? "Advance Cash" : m === "upi" ? "UPI" : "Online"))
+              .map((m) => (m === "advance_cash" ? t("card.payAdvanceCash") : m === "upi" ? t("card.payUpi") : t("card.payOnline")))
               .join(" · ")}
-            {equipment.advance_percent > 0 && ` · ${equipment.advance_percent}% advance`}
+            {equipment.advance_percent > 0 && ` · ${equipment.advance_percent}% ${t("card.advance")}`}
           </p>
         )}
 
@@ -197,7 +202,7 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
           disabled={!equipment.available}
         >
           <CalendarCheck className="h-4 w-4" />
-          Book Now
+          {t("card.bookNow")}
         </Button>
 
         <Button
@@ -207,17 +212,17 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
           disabled={!equipment.available}
         >
           <MessageCircle className="h-4 w-4" />
-          WhatsApp
+          {t("card.whatsapp")}
         </Button>
 
         <div className="mt-2 grid grid-cols-2 gap-2">
           <Button variant="outline" size="sm" onClick={handleCall} disabled={!equipment.available}>
             <Phone className="h-4 w-4" />
-            Call
+            {t("card.call")}
           </Button>
           <Button variant="outline" size="sm" onClick={handleSMS} disabled={!equipment.available}>
             <MessageSquare className="h-4 w-4" />
-            SMS
+            {t("card.sms")}
           </Button>
         </div>
       </div>

@@ -33,6 +33,12 @@ const modeIcon: Record<string, typeof Banknote> = {
   upi: Smartphone,
 };
 
+const modeLabelKey: Record<string, string> = {
+  advance_cash: "book.mode.advance_cash",
+  online: "book.mode.online",
+  upi: "book.mode.upi",
+};
+
 const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
   const { user } = useAuth();
   const { t } = useLang();
@@ -64,11 +70,11 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
 
   const goToPayment = () => {
     if (!startDate || !(Number(qty) > 0)) {
-      toast.error("Please choose a start date and duration");
+      toast.error(t("book.errDateDuration"));
       return;
     }
     if (!(name || profile?.full_name) || !(phone || profile?.whatsapp)) {
-      toast.error("Please enter your name and phone number");
+      toast.error(t("book.errNamePhone"));
       return;
     }
     setStep("payment");
@@ -80,7 +86,7 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
       return;
     }
     if ((mode === "online" || mode === "upi") && !payRef.trim()) {
-      toast.error("Enter the payment reference / UPI transaction ID");
+      toast.error(t("book.errPaymentRef"));
       return;
     }
     setSaving(true);
@@ -102,9 +108,9 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
         notes: notes || null,
       });
       setStep("done");
-      toast.success("Booking request sent to the owner");
+      toast.success(t("book.toastBookingSent"));
     } catch (err: any) {
-      toast.error(err.message || "Booking failed");
+      toast.error(err.message || t("book.toastBookingFailed"));
     } finally {
       setSaving(false);
     }
@@ -112,11 +118,18 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
 
   const sendWhatsApp = () => {
     const digits = equipment.whatsapp.replace(/\D/g, "");
+    const modeLabel = t(modeLabelKey[mode] || "book.mode.advance_cash");
+    const refSuffix = payRef ? t("book.whatsappRefSuffix").replace("{ref}", payRef) : "";
     const msg = encodeURIComponent(
-      `Namaste ${equipment.owner_name}, maine AI-Agrishare par aapka ${equipment.name} book kiya hai.\n` +
-        `Date: ${startDate}\nDuration: ${qty} ${unit}\nTotal: ₹${total}\nPayment: ${
-          allowedModes.find((m) => m.value === mode)?.label
-        }${payRef ? ` (Ref: ${payRef})` : ""}`
+      t("book.whatsappMsg")
+        .replace("{owner}", equipment.owner_name)
+        .replace("{equipment}", equipment.name)
+        .replace("{date}", startDate)
+        .replace("{qty}", String(qty))
+        .replace("{unit}", unit)
+        .replace("{total}", String(total))
+        .replace("{mode}", modeLabel)
+        .replace("{ref}", refSuffix)
     );
     window.open(`https://wa.me/${digits}?text=${msg}`, "_blank");
   };
@@ -133,16 +146,16 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
         {step === "details" && (
           <>
             <DialogHeader>
-              <DialogTitle className="font-display">Book {equipment.name}</DialogTitle>
+              <DialogTitle className="font-display">{t("book.title").replace("{name}", equipment.name)}</DialogTitle>
               <DialogDescription>
-                Owner: {equipment.owner_name} · ₹{equipment.price_per_hour}/hr · ₹{equipment.price_per_day}/day
+                {t("book.owner")}: {equipment.owner_name} · ₹{equipment.price_per_hour}/hr · ₹{equipment.price_per_day}/day
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <Label htmlFor="bk-date">Start date</Label>
+                  <Label htmlFor="bk-date">{t("book.startDate")}</Label>
                   <Input
                     id="bk-date"
                     type="date"
@@ -151,14 +164,14 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Rent by</Label>
+                  <Label>{t("book.rentBy")}</Label>
                   <Select value={unit} onValueChange={(v) => setUnit(v as "hour" | "day")}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="hour">Per hour</SelectItem>
-                      <SelectItem value="day">Per day</SelectItem>
+                      <SelectItem value="hour">{t("book.perHour")}</SelectItem>
+                      <SelectItem value="day">{t("book.perDay")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -166,7 +179,7 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="bk-qty">{unit === "day" ? "Days" : "Hours"}</Label>
+                  <Label htmlFor="bk-qty">{unit === "day" ? t("book.days") : t("book.hours")}</Label>
                   <Input
                     id="bk-qty"
                     type="number"
@@ -176,38 +189,38 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="bk-name">Your name</Label>
+                  <Label htmlFor="bk-name">{t("book.yourName")}</Label>
                   <Input
                     id="bk-name"
                     value={name || profile?.full_name || ""}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Full name"
+                    placeholder={t("book.fullNamePlaceholder")}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="bk-phone">Phone</Label>
+                  <Label htmlFor="bk-phone">{t("book.phone")}</Label>
                   <Input
                     id="bk-phone"
                     value={phone || profile?.whatsapp || ""}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="91XXXXXXXXXX"
+                    placeholder={t("book.phonePlaceholder")}
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="bk-notes">Work details (optional)</Label>
+                <Label htmlFor="bk-notes">{t("book.workDetails")}</Label>
                 <Textarea
                   id="bk-notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g., 5 acre ploughing, Sakur village"
+                  placeholder={t("book.workDetailsPlaceholder")}
                 />
               </div>
 
               <div className="rounded-lg border bg-muted/40 p-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Estimated total</span>
+                  <span className="text-muted-foreground">{t("book.estimatedTotal")}</span>
                   <span className="font-display text-lg font-bold text-foreground">
                     <IndianRupee className="inline h-4 w-4" />
                     {total}
@@ -215,14 +228,14 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
                 </div>
                 {equipment.advance_percent > 0 && (
                   <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Advance ({equipment.advance_percent}%)</span>
+                    <span>{t("book.advance").replace("{percent}", String(equipment.advance_percent))}</span>
                     <span>₹{advance}</span>
                   </div>
                 )}
               </div>
 
               <Button className="w-full" size="lg" onClick={goToPayment}>
-                Continue to payment
+                {t("book.continueToPayment")}
               </Button>
             </div>
           </>
@@ -231,14 +244,24 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
         {step === "payment" && (
           <>
             <DialogHeader>
-              <DialogTitle className="font-display">Payment</DialogTitle>
-              <DialogDescription>Choose how you want to pay {equipment.owner_name}</DialogDescription>
+              <DialogTitle className="font-display">{t("book.paymentTitle")}</DialogTitle>
+              <DialogDescription>{t("book.paymentDesc").replace("{owner}", equipment.owner_name)}</DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="grid gap-2">
                 {allowedModes.map((m) => {
                   const Icon = modeIcon[m.value] || Banknote;
+                  const label = t(modeLabelKey[m.value] || "book.mode.advance_cash");
+                  let desc = "";
+                  if (m.value === "advance_cash") {
+                    desc = t("book.mode.advanceDesc").replace("{amount}", String(advance || total));
+                  } else if (m.value === "upi") {
+                    const to = equipment.upi_id ? t("book.mode.upiTo").replace("{upi}", equipment.upi_id) : "";
+                    desc = t("book.mode.upiDesc").replace("{amount}", String(total)).replace("{to}", to);
+                  } else {
+                    desc = t("book.mode.onlineDesc").replace("{amount}", String(total));
+                  }
                   return (
                     <button
                       key={m.value}
@@ -252,14 +275,8 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
                     >
                       <Icon className="h-5 w-5 text-primary" />
                       <div>
-                        <p className="text-sm font-medium text-foreground">{m.label}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {m.value === "advance_cash"
-                            ? `Pay ₹${advance || total} advance in cash, rest after work`
-                            : m.value === "upi"
-                            ? `Pay ₹${total} via UPI${equipment.upi_id ? ` to ${equipment.upi_id}` : ""}`
-                            : `Pay ₹${total} online`}
-                        </p>
+                        <p className="text-sm font-medium text-foreground">{label}</p>
+                        <p className="text-xs text-muted-foreground">{desc}</p>
                       </div>
                     </button>
                   );
@@ -278,7 +295,7 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
                     <Label className="text-xs text-muted-foreground">{t("pay.afterPay")}</Label>
                     <Input
                       className="mt-1.5"
-                      placeholder="UPI transaction ID"
+                      placeholder={t("book.upiRefPlaceholder")}
                       value={payRef}
                       onChange={(e) => setPayRef(e.target.value)}
                     />
@@ -298,7 +315,7 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
                     <Label className="text-xs text-muted-foreground">{t("pay.afterPay")}</Label>
                     <Input
                       className="mt-1.5"
-                      placeholder="Payment reference number"
+                      placeholder={t("book.paymentRefPlaceholder")}
                       value={payRef}
                       onChange={(e) => setPayRef(e.target.value)}
                     />
@@ -308,16 +325,16 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
 
               <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
-                Booking details owner ko turant dikh jayenge. Payment aap seedha owner ko karte hain.
+                {t("book.trustNote")}
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" onClick={() => setStep("details")}>
-                  Back
+                  {t("book.back")}
                 </Button>
                 <Button onClick={confirmBooking} disabled={saving}>
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Confirm booking
+                  {t("book.confirmBooking")}
                 </Button>
               </div>
             </div>
@@ -327,9 +344,9 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
         {step === "done" && (
           <>
             <DialogHeader>
-              <DialogTitle className="font-display">Booking confirmed 🎉</DialogTitle>
+              <DialogTitle className="font-display">{t("book.confirmedTitle")}</DialogTitle>
               <DialogDescription>
-                {equipment.owner_name} ko aapki request mil gayi hai.
+                {t("book.confirmedDesc").replace("{owner}", equipment.owner_name)}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3">
@@ -342,10 +359,10 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
                 </p>
               </div>
               <Button variant="whatsapp" className="w-full" onClick={sendWhatsApp}>
-                Send details on WhatsApp
+                {t("book.sendWhatsApp")}
               </Button>
               <Button variant="outline" className="w-full" onClick={() => onOpenChange(false)}>
-                Close
+                {t("book.close")}
               </Button>
             </div>
           </>
