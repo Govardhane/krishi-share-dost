@@ -62,21 +62,35 @@ const HeroSection = () => {
             <Link
               key={card.key}
               to={card.to}
-              className={`group flex flex-col rounded-xl p-5 shadow-card transition hover:-translate-y-1 hover:shadow-elevated ${card.tint}`}
+              className={`group flex flex-col overflow-hidden rounded-xl shadow-card transition hover:-translate-y-1 hover:shadow-elevated ${card.tint}`}
             >
-              <span className={`flex h-12 w-12 items-center justify-center rounded-full ${card.chip}`}>
-                <card.icon className="h-6 w-6" />
-              </span>
-              <h2 className="mt-4 font-display text-base font-bold leading-snug">
-                {t(`hero.${card.key}.t`)}
-              </h2>
-              <p className="mt-2 text-xs leading-relaxed opacity-80">{t(`hero.${card.key}.d`)}</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold">
-                {t("hero.explore")}
-                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
-              </span>
+              <div className="relative h-28 overflow-hidden">
+                <img
+                  src={card.img}
+                  alt={t(`hero.${card.key}.t`)}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 to-transparent" />
+                <span
+                  className={`absolute -bottom-5 left-4 flex h-11 w-11 items-center justify-center rounded-full border-2 border-background shadow-card ${card.tint}`}
+                >
+                  <card.icon className="h-5 w-5" />
+                </span>
+              </div>
+              <div className="flex flex-1 flex-col p-5 pt-7">
+                <h2 className="font-display text-base font-bold leading-snug">
+                  {t(`hero.${card.key}.t`)}
+                </h2>
+                <p className="mt-2 text-xs leading-relaxed opacity-80">{t(`hero.${card.key}.d`)}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold">
+                  {t("hero.explore")}
+                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
+                </span>
+              </div>
             </Link>
           ))}
+
         </div>
 
         {/* Stats strip */}
