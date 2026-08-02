@@ -1,14 +1,20 @@
 import { Sparkles, CloudSun, Tractor, Newspaper, Users, PawPrint } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import equipmentImg from "@/assets/Equipmnet.jpg.asset.json";
+import aiImg from "@/assets/AI.webp.asset.json";
+import weatherImg from "@/assets/wether.webp.asset.json";
+import livestockImg from "@/assets/live_stack.webp.asset.json";
+import newsImg from "@/assets/farmer_news_update.jpg.asset.json";
 
 const features = [
-  { icon: Sparkles, key: "f1", live: false },
-  { icon: CloudSun, key: "f2", live: false },
-  { icon: Tractor, key: "f3", live: true },
-  { icon: PawPrint, key: "f4", live: false },
-  { icon: Newspaper, key: "f5", live: false },
-  { icon: Users, key: "f6", live: false },
+  { icon: Sparkles, key: "f1", live: false, img: aiImg.url },
+  { icon: CloudSun, key: "f2", live: false, img: weatherImg.url },
+  { icon: Tractor, key: "f3", live: true, img: equipmentImg.url },
+  { icon: PawPrint, key: "f4", live: false, img: livestockImg.url },
+  { icon: Newspaper, key: "f5", live: false, img: newsImg.url },
+  { icon: Users, key: "f6", live: false, img: equipmentImg.url },
 ];
+
 
 const PlatformFeatures = () => {
   const { t } = useLang();
