@@ -1,15 +1,21 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Search, Tractor, CloudSun, Sparkles, PawPrint, Newspaper, Users } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import equipmentImg from "@/assets/Equipmnet.jpg.asset.json";
+import aiImg from "@/assets/AI.webp.asset.json";
+import weatherImg from "@/assets/wether.webp.asset.json";
+import livestockImg from "@/assets/live_stack.webp.asset.json";
+import newsImg from "@/assets/farmer_news_update.jpg.asset.json";
 
 const cards = [
-  { key: "c1", icon: Tractor, to: "/browse", tint: "bg-tint-1 text-tint-1-foreground", chip: "bg-tint-1-foreground/15" },
-  { key: "c2", icon: Search, to: "/list-equipment", tint: "bg-tint-2 text-tint-2-foreground", chip: "bg-tint-2-foreground/10" },
-  { key: "c3", icon: Sparkles, to: "/#features", tint: "bg-tint-3 text-tint-3-foreground", chip: "bg-tint-3-foreground/10" },
-  { key: "c4", icon: CloudSun, to: "/#features", tint: "bg-tint-4 text-tint-4-foreground", chip: "bg-tint-4-foreground/10" },
-  { key: "c5", icon: PawPrint, to: "/#features", tint: "bg-tint-5 text-tint-5-foreground", chip: "bg-tint-5-foreground/10" },
-  { key: "c6", icon: Newspaper, to: "/#features", tint: "bg-tint-6 text-tint-6-foreground", chip: "bg-tint-6-foreground/10" },
+  { key: "c1", icon: Tractor, to: "/browse", img: equipmentImg.url, tint: "bg-tint-1 text-tint-1-foreground", chip: "bg-tint-1-foreground/15" },
+  { key: "c2", icon: Search, to: "/list-equipment", img: equipmentImg.url, tint: "bg-tint-2 text-tint-2-foreground", chip: "bg-tint-2-foreground/10" },
+  { key: "c3", icon: Sparkles, to: "/#features", img: aiImg.url, tint: "bg-tint-3 text-tint-3-foreground", chip: "bg-tint-3-foreground/10" },
+  { key: "c4", icon: CloudSun, to: "/#features", img: weatherImg.url, tint: "bg-tint-4 text-tint-4-foreground", chip: "bg-tint-4-foreground/10" },
+  { key: "c5", icon: PawPrint, to: "/#features", img: livestockImg.url, tint: "bg-tint-5 text-tint-5-foreground", chip: "bg-tint-5-foreground/10" },
+  { key: "c6", icon: Newspaper, to: "/#features", img: newsImg.url, tint: "bg-tint-6 text-tint-6-foreground", chip: "bg-tint-6-foreground/10" },
 ];
+
 
 const HeroSection = () => {
   const { t } = useLang();
