@@ -4,6 +4,10 @@ import { Dict } from "./i18n-types";
 export const cardsDict: Dict = {
   // EquipmentCard
   "card.bestValue": { en: "Best Value", mr: "सर्वोत्तम किंमत" },
+  "card.topPick": { en: "Top pick", mr: "उत्तम पर्याय" },
+  "card.perDayLabel": { en: "per day", mr: "प्रति दिवस" },
+  "card.newTag": { en: "New", mr: "नवीन" },
+
   "card.available": { en: "Available", mr: "उपलब्ध" },
   "card.unavailable": { en: "Unavailable", mr: "अनुपलब्ध" },
   "card.hp": { en: "HP", mr: "एचपी" },
