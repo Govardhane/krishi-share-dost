@@ -104,7 +104,92 @@ export const paymentModeOptions = [
   { value: "upi", label: "UPI" },
 ];
 
-// Best-value score: better rating, more features, more power, lower rate = higher rank
+// ---------- Smart ranking algorithm ----------
+// Multi-criteria decision scoring (min-max normalised, weighted) so that
+// comparisons are relative to the equipment actually available in the area,
+// instead of arbitrary magic numbers.
+const RANK_WEIGHTS = {
+  price: 0.3, // cheaper per-day rate = better
+  rating: 0.22, // quality signal
+  trust: 0.1, // number of ratings (confidence, log-scaled)
+  features: 0.14, // more useful attachments/features
+  power: 0.1, // HP suitability
+  freshness: 0.06, // newer machine / recent listing
+  availability: 0.05,
+  payment: 0.03, // more payment options = more convenient
+} as const;
+
+function norm(value: number, min: number, max: number) {
+  if (!isFinite(value)) return 0;
+  if (max - min <= 0) return 0.5;
+  return Math.min(1, Math.max(0, (value - min) / (max - min)));
+}
+
+const bayesianRating = (rating: number, count: number, mean: number) => {
+  const C = 3; // smoothing: needs ~3 ratings before full weight
+  return (count * (Number(rating) || 0) + C * mean) / ((count || 0) + C);
+};
+
+export function rankEquipment(rows: EquipmentRow[]) {
+  if (rows.length <= 1) return [...rows];
+
+  const prices = rows.map((r) => Number(r.price_per_day) || 0).filter((p) => p > 0);
+  const minPrice = Math.min(...prices, Infinity);
+  const maxPrice = Math.max(...prices, 0);
+  const maxFeatures = Math.max(...rows.map((r) => r.features?.length || 0), 1);
+  const maxHp = Math.max(...rows.map((r) => r.hp || 0), 1);
+  const rated = rows.filter((r) => (r.rating_count || 0) > 0);
+  const meanRating = rated.length
+    ? rated.reduce((s, r) => s + (Number(r.rating) || 0), 0) / rated.length
+    : 3.5;
+  const maxCount = Math.max(...rows.map((r) => r.rating_count || 0), 1);
+  const now = Date.now();
+  const currentYear = new Date().getFullYear();
+
+  const scored = rows.map((e) => {
+    const price = Number(e.price_per_day) || 0;
+    // invert: lower price scores higher
+    const priceScore = price > 0 ? 1 - norm(price, minPrice, maxPrice) : 0.4;
+
+    const ratingScore = norm(bayesianRating(Number(e.rating) || 0, e.rating_count || 0, meanRating), 1, 5);
+    const trustScore = Math.log1p(e.rating_count || 0) / Math.log1p(maxCount);
+    const featureScore = (e.features?.length || 0) / maxFeatures;
+    const powerScore = e.hp ? norm(e.hp, 0, maxHp) : 0.35;
+
+    const ageYears = e.year_of_purchase ? Math.max(0, currentYear - e.year_of_purchase) : 8;
+    const conditionBonus =
+      e.condition === "excellent" ? 1 : e.condition === "good" ? 0.7 : e.condition === "average" ? 0.4 : 0.5;
+    const listedDays = (now - new Date(e.created_at).getTime()) / 86_400_000;
+    const freshnessScore =
+      0.6 * Math.max(0, 1 - ageYears / 15) + 0.25 * conditionBonus + 0.15 * Math.max(0, 1 - listedDays / 90);
+
+    const availabilityScore = e.available ? 1 : 0;
+    const paymentScore = Math.min(1, (e.payment_modes?.length || 1) / 3);
+
+    const score =
+      RANK_WEIGHTS.price * priceScore +
+      RANK_WEIGHTS.rating * ratingScore +
+      RANK_WEIGHTS.trust * trustScore +
+      RANK_WEIGHTS.features * featureScore +
+      RANK_WEIGHTS.power * powerScore +
+      RANK_WEIGHTS.freshness * freshnessScore +
+      RANK_WEIGHTS.availability * availabilityScore +
+      RANK_WEIGHTS.payment * paymentScore;
+
+    return { e, score };
+  });
+
+  return scored
+    .sort((a, b) => {
+      // unavailable machines always after available ones
+      if (a.e.available !== b.e.available) return a.e.available ? -1 : 1;
+      if (b.score !== a.score) return b.score - a.score;
+      return (Number(a.e.price_per_day) || 0) - (Number(b.e.price_per_day) || 0);
+    })
+    .map((s) => s.e);
+}
+
+// Kept for backwards compatibility (single-item heuristic score)
 export function valueScore(e: EquipmentRow) {
   const priceScore = e.price_per_day > 0 ? 4000 / e.price_per_day : 0;
   return (
