@@ -6,7 +6,6 @@ import BookingDialog from "@/components/BookingDialog";
 import { useLang } from "@/lib/i18n";
 import {
   MapPin,
-  Clock,
   IndianRupee,
   MessageCircle,
   Phone,
@@ -18,6 +17,7 @@ import {
   Award,
   CalendarCheck,
 } from "lucide-react";
+
 import tractorImg from "@/assets/tractor.jpg";
 import rotavatorImg from "@/assets/rotavator.jpg";
 import harvesterImg from "@/assets/harvester.jpg";
