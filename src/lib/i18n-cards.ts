@@ -4,6 +4,10 @@ import { Dict } from "./i18n-types";
 export const cardsDict: Dict = {
   // EquipmentCard
   "card.bestValue": { en: "Best Value", mr: "सर्वोत्तम किंमत" },
+  "card.topPick": { en: "Top pick", mr: "उत्तम पर्याय" },
+  "card.perDayLabel": { en: "per day", mr: "प्रति दिवस" },
+  "card.newTag": { en: "New", mr: "नवीन" },
+
   "card.available": { en: "Available", mr: "उपलब्ध" },
   "card.unavailable": { en: "Unavailable", mr: "अनुपलब्ध" },
   "card.hp": { en: "HP", mr: "एचपी" },
@@ -81,4 +85,28 @@ export const cardsDict: Dict = {
   "browse.allVillages": { en: "All Villages", mr: "सर्व गावे" },
   "browse.foundSuffix": { en: "equipment found", mr: "अवजारे सापडली" },
   "browse.noResults": { en: "No equipment found. Try a different search or filter.", mr: "कोणतेही अवजार सापडले नाही. वेगळा शोध किंवा फिल्टर वापरून पहा." },
+  "browse.clearAll": { en: "Clear all filters", mr: "सर्व फिल्टर काढा" },
+
+  // Advanced filters / sorting
+  "browse.sortBy": { en: "Sort by", mr: "क्रमवारी" },
+  "browse.sortBest": { en: "Best value first", mr: "सर्वोत्तम मूल्य आधी" },
+  "browse.sortPriceLow": { en: "Price: low to high", mr: "किंमत: कमी ते जास्त" },
+  "browse.sortPriceHigh": { en: "Price: high to low", mr: "किंमत: जास्त ते कमी" },
+  "browse.sortRating": { en: "Top rated", mr: "सर्वाधिक रेटिंग" },
+  "browse.sortHp": { en: "Most powerful (HP)", mr: "सर्वाधिक ताकद (एचपी)" },
+  "browse.sortNewest": { en: "Newest listings", mr: "नवीन नोंदी" },
+  "browse.moreFilters": { en: "More filters", mr: "अधिक फिल्टर" },
+  "browse.hideFilters": { en: "Hide filters", mr: "फिल्टर लपवा" },
+  "browse.maxDayPrice": { en: "Max day rate", mr: "जास्तीत जास्त दिवसाचा दर" },
+  "browse.minHp": { en: "Minimum HP", mr: "किमान एचपी" },
+  "browse.anyHp": { en: "Any", mr: "कोणतेही" },
+  "browse.features": { en: "Must-have features", mr: "आवश्यक वैशिष्ट्ये" },
+  "browse.onlyAvailable": { en: "Only available now", mr: "फक्त आता उपलब्ध" },
+  "browse.paymentMode": { en: "Payment option", mr: "पेमेंट पर्याय" },
+  "browse.anyPayment": { en: "Any payment", mr: "कोणतेही पेमेंट" },
+  "browse.filtersActive": { en: "filters active", mr: "फिल्टर सुरू" },
+  "browse.avgRate": { en: "Avg day rate", mr: "सरासरी दिवस दर" },
+  "browse.cheapest": { en: "Cheapest", mr: "सर्वात स्वस्त" },
+  "browse.availableNow": { en: "Available now", mr: "आता उपलब्ध" },
 };
+
