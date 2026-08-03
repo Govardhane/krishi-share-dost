@@ -285,8 +285,8 @@ export function useEquipment(filters?: {
             (r.description ?? "").toLowerCase().includes(s)
         );
       }
-      // Best value first (rating + features + power vs rate)
-      rows = [...rows].sort((a, b) => valueScore(b) - valueScore(a));
+      // Smart best-value ranking (normalised multi-criteria score)
+      rows = rankEquipment(rows);
       return rows;
     },
   });
