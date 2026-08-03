@@ -205,24 +205,8 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
           </div>
         </div>
 
-        <div className="mt-3 flex items-center gap-4">
-          <div className="flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5 text-secondary" />
-            <span className="text-sm font-semibold text-card-foreground">
-              <IndianRupee className="inline h-3 w-3" />
-              {equipment.price_per_hour}{t("card.perHour")}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-sm text-muted-foreground">
-              <IndianRupee className="inline h-3 w-3" />
-              {equipment.price_per_day}{t("card.perDay")}
-            </span>
-          </div>
-        </div>
-
         {equipment.payment_modes?.length > 0 && (
-          <p className="mt-2 text-[11px] text-muted-foreground">
+          <p className="mt-3 text-[11px] text-muted-foreground">
             {t("card.payment")}{" "}
             {equipment.payment_modes
               .map((m) => (m === "advance_cash" ? t("card.payAdvanceCash") : m === "upi" ? t("card.payUpi") : t("card.payOnline")))
@@ -231,35 +215,50 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
           </p>
         )}
 
-        <Button
-          className="mt-4 w-full"
-          onClick={() => setBookingOpen(true)}
-          disabled={!equipment.available}
-        >
-          <CalendarCheck className="h-4 w-4" />
-          {t("card.bookNow")}
-        </Button>
-
-        <Button
-          variant="whatsapp"
-          className="mt-2 w-full"
-          onClick={handleWhatsApp}
-          disabled={!equipment.available}
-        >
-          <MessageCircle className="h-4 w-4" />
-          {t("card.whatsapp")}
-        </Button>
-
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          <Button variant="outline" size="sm" onClick={handleCall} disabled={!equipment.available}>
-            <Phone className="h-4 w-4" />
-            {t("card.call")}
+        <div className="mt-auto pt-4">
+          <Button
+            className="w-full"
+            onClick={() => setBookingOpen(true)}
+            disabled={!equipment.available}
+          >
+            <CalendarCheck className="h-4 w-4" />
+            {t("card.bookNow")}
           </Button>
-          <Button variant="outline" size="sm" onClick={handleSMS} disabled={!equipment.available}>
-            <MessageSquare className="h-4 w-4" />
-            {t("card.sms")}
-          </Button>
+
+          <div className="mt-2 grid grid-cols-3 gap-2">
+            <Button
+              variant="whatsapp"
+              size="sm"
+              onClick={handleWhatsApp}
+              disabled={!equipment.available}
+              aria-label={t("card.whatsapp")}
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only">{t("card.whatsapp")}</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCall}
+              disabled={!equipment.available}
+              aria-label={t("card.call")}
+            >
+              <Phone className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only">{t("card.call")}</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSMS}
+              disabled={!equipment.available}
+              aria-label={t("card.sms")}
+            >
+              <MessageSquare className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only">{t("card.sms")}</span>
+            </Button>
+          </div>
         </div>
+
       </div>
 
       <BookingDialog equipment={equipment} open={bookingOpen} onOpenChange={setBookingOpen} />
