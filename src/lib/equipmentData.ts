@@ -318,6 +318,8 @@ export async function insertEquipment(equipment: {
   payment_modes?: string[];
   advance_percent?: number;
   upi_id?: string | null;
+  phonepe_number?: string | null;
+  payment_qr_url?: string | null;
 }) {
   const { data, error } = await supabase.from("equipment").insert(equipment).select().single();
   if (error) throw error;
