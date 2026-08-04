@@ -290,6 +290,8 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
                     payeeName={equipment.owner_name}
                     amount={total}
                     note={`AI-Agrishare ${equipment.name}`}
+                    phonepeNumber={equipment.phonepe_number}
+                    ownerQrPath={equipment.payment_qr_url}
                   />
                   <div>
                     <Label className="text-xs text-muted-foreground">{t("pay.afterPay")}</Label>
@@ -310,6 +312,8 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
                     payeeName={equipment.owner_name}
                     amount={total}
                     note={`AI-Agrishare ${equipment.name}`}
+                    phonepeNumber={equipment.phonepe_number}
+                    ownerQrPath={equipment.payment_qr_url}
                   />
                   <div>
                     <Label className="text-xs text-muted-foreground">{t("pay.afterPay")}</Label>
