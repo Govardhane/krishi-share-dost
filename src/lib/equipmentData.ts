@@ -400,3 +400,36 @@ export async function uploadEquipmentPhoto(file: File, userId: string) {
   const { data } = supabase.storage.from("equipment-photos").getPublicUrl(path);
   return data.publicUrl;
 }
+
+// ---------- Owner payment QR ----------
+export async function uploadPaymentQr(file: File, userId: string) {
+  const ext = file.name.split(".").pop() || "png";
+  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { error } = await supabase.storage
+    .from("payment-qr")
+    .upload(path, file, { cacheControl: "3600", upsert: false });
+  if (error) throw error;
+  return path;
+}
+
+export async function getPaymentQrUrl(path?: string | null) {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  const { data, error } = await supabase.storage.from("payment-qr").createSignedUrl(path, 60 * 60);
+  if (error) return null;
+  return data.signedUrl;
+}
+
+export async function updateEquipmentPayment(
+  id: string,
+  fields: {
+    payment_modes?: string[];
+    advance_percent?: number;
+    upi_id?: string | null;
+    phonepe_number?: string | null;
+    payment_qr_url?: string | null;
+  }
+) {
+  const { error } = await supabase.from("equipment").update(fields).eq("id", id);
+  if (error) throw error;
+}

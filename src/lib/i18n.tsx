@@ -101,6 +101,8 @@ export const baseDict: Dict = {
   "pay.choose": { en: "Choose your UPI app — it will open directly on your phone", mr: "तुमचे यूपीआय अ‍ॅप निवडा — ते थेट तुमच्या फोनवर उघडेल" },
   "pay.afterPay": { en: "After paying, paste the UPI transaction ID below", mr: "पैसे दिल्यानंतर खाली यूपीआय ट्रान्झॅक्शन आयडी टाका" },
   "pay.noUpi": { en: "Owner has not added a UPI ID. Please use Advance Cash or ask on WhatsApp.", mr: "मालकाने यूपीआय आयडी दिलेला नाही. कृपया आगाऊ रोख वापरा किंवा व्हॉट्सअ‍ॅपवर विचारा." },
+  "pay.ownerQr": { en: "Owner's QR code — scan to pay", mr: "मालकाचा QR कोड — स्कॅन करून पैसे द्या" },
+  "pay.ownerPhonepe": { en: "PhonePe / GPay number", mr: "फोनपे / जीपे नंबर" },
   "pay.desktopHint": { en: "On desktop? Scan the QR from your phone's UPI app.", mr: "डेस्कटॉपवर आहात? फोनच्या यूपीआय अ‍ॅपने QR स्कॅन करा." },
 };
 
