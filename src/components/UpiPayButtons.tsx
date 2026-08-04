@@ -1,16 +1,31 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Smartphone, QrCode } from "lucide-react";
+import { Smartphone, QrCode, Phone } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { getPaymentQrUrl } from "@/lib/equipmentData";
 
 interface Props {
   upiId: string | null;
   payeeName: string;
   amount: number;
   note: string;
+  phonepeNumber?: string | null;
+  ownerQrPath?: string | null;
 }
 
-const UpiPayButtons = ({ upiId, payeeName, amount, note }: Props) => {
+const UpiPayButtons = ({ upiId, payeeName, amount, note, phonepeNumber, ownerQrPath }: Props) => {
   const { t } = useLang();
+  const [ownerQr, setOwnerQr] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    getPaymentQrUrl(ownerQrPath).then((url) => {
+      if (active) setOwnerQr(url);
+    });
+    return () => {
+      active = false;
+    };
+  }, [ownerQrPath]);
 
   const apps = [
     { key: "phonepe", label: t("pay2.phonepe"), scheme: "phonepe://pay", color: "bg-[#5f259f]" },
@@ -19,9 +34,33 @@ const UpiPayButtons = ({ upiId, payeeName, amount, note }: Props) => {
     { key: "any", label: t("pay2.anyUpiApp"), scheme: "upi://pay", color: "bg-primary" },
   ];
 
+  const ownerBlock = (
+    <>
+      {ownerQr && (
+        <div className="rounded-lg border bg-background p-3">
+          <p className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+            <QrCode className="h-3.5 w-3.5 text-primary" /> {t("pay.ownerQr")}
+          </p>
+          <img src={ownerQr} alt={t("pay.ownerQr")} className="mt-2 h-44 w-44 rounded-md border object-contain" />
+        </div>
+      )}
+      {phonepeNumber && (
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Phone className="h-3.5 w-3.5 text-primary" /> {t("pay.ownerPhonepe")}: <span className="font-medium text-foreground">{phonepeNumber}</span>
+        </p>
+      )}
+    </>
+  );
+
   if (!upiId) {
     return (
-      <div className="rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">{t("pay.noUpi")}</div>
+      <div className="space-y-3 rounded-lg border bg-muted/40 p-3">
+        {ownerQr || phonepeNumber ? (
+          ownerBlock
+        ) : (
+          <p className="text-xs text-muted-foreground">{t("pay.noUpi")}</p>
+        )}
+      </div>
     );
   }
 
@@ -56,6 +95,8 @@ const UpiPayButtons = ({ upiId, payeeName, amount, note }: Props) => {
           </Button>
         ))}
       </div>
+
+      {ownerBlock}
 
       <details className="text-xs text-muted-foreground">
         <summary className="flex cursor-pointer items-center gap-1.5">
