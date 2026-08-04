@@ -46,6 +46,8 @@ export interface EquipmentRow {
   payment_modes: string[];
   advance_percent: number;
   upi_id: string | null;
+  phonepe_number: string | null;
+  payment_qr_url: string | null;
   rating: number;
   rating_count: number;
   owner_user_id?: string | null;
