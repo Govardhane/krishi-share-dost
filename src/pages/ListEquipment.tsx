@@ -305,12 +305,41 @@ const ListEquipment = () => {
                   <Label htmlFor="advancePercent">{t("list.advanceRequired")}</Label>
                   <Input id="advancePercent" name="advancePercent" type="number" placeholder="20" defaultValue="0" />
                 </div>
-                {paymentModes.includes("upi") && (
-                  <div className="space-y-2">
-                    <Label htmlFor="upiId">{t("list.upiId")}</Label>
-                    <Input id="upiId" name="upiId" placeholder="name@okaxis" />
+                <div className="space-y-2">
+                  <Label htmlFor="upiId">{t("list.upiId")}</Label>
+                  <Input id="upiId" name="upiId" placeholder="name@okaxis" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phonepeNumber">{t("list.phonepeNumber")}</Label>
+                  <Input id="phonepeNumber" name="phonepeNumber" placeholder="9876543210" inputMode="numeric" />
+                </div>
+              </div>
+
+              <div className="mt-3 space-y-2">
+                <Label>{t("list.paymentQr")}</Label>
+                <p className="text-xs text-muted-foreground">{t("list.qrHint")}</p>
+                {qrPreview ? (
+                  <div className="relative w-40 overflow-hidden rounded-lg border bg-muted">
+                    <img src={qrPreview} alt="QR preview" className="h-40 w-40 object-contain bg-background" />
+                    <button
+                      type="button"
+                      onClick={clearQr}
+                      className="absolute right-1 top-1 rounded-full bg-background/90 p-1.5 shadow-sm hover:bg-background"
+                      aria-label={t("list.removeQr")}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
+                ) : (
+                  <label
+                    htmlFor="qr"
+                    className="flex h-32 w-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-muted/30 p-2 text-center text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-muted/50"
+                  >
+                    <QrCode className="h-6 w-6" />
+                    <span>{t("list.clickUploadQr")}</span>
+                  </label>
                 )}
+                <input id="qr" type="file" accept="image/*" className="hidden" onChange={handleQrChange} />
               </div>
             </div>
 
