@@ -20,6 +20,7 @@ import { useLang } from "@/lib/i18n";
 import tractorImg from "@/assets/tractor.jpg";
 import rotavatorImg from "@/assets/rotavator.jpg";
 import harvesterImg from "@/assets/harvester.jpg";
+import PaymentDetailsDialog from "@/components/PaymentDetailsDialog";
 
 const typeImages: Record<string, string> = {
   tractor: tractorImg,
@@ -115,6 +116,8 @@ const MyEquipmentList = ({ userId }: { userId: string }) => {
                 </span>
               </div>
             </div>
+            <div className="flex shrink-0 flex-col gap-2">
+            <PaymentDetailsDialog equipment={eq} userId={userId} />
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
@@ -149,6 +152,7 @@ const MyEquipmentList = ({ userId }: { userId: string }) => {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+            </div>
           </div>
         );
       })}
