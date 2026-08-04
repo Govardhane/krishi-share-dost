@@ -124,6 +124,8 @@ export type Database = {
           owner_name: string
           owner_user_id: string | null
           payment_modes: string[]
+          payment_qr_url: string | null
+          phonepe_number: string | null
           price_per_day: number
           price_per_hour: number
           quantity: number
@@ -155,6 +157,8 @@ export type Database = {
           owner_name: string
           owner_user_id?: string | null
           payment_modes?: string[]
+          payment_qr_url?: string | null
+          phonepe_number?: string | null
           price_per_day: number
           price_per_hour: number
           quantity?: number
@@ -186,6 +190,8 @@ export type Database = {
           owner_name?: string
           owner_user_id?: string | null
           payment_modes?: string[]
+          payment_qr_url?: string | null
+          phonepe_number?: string | null
           price_per_day?: number
           price_per_hour?: number
           quantity?: number

@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment, uploadEquipmentPhoto, tractorClasses, featureOptions, paymentModeOptions } from "@/lib/equipmentData";
+import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment, uploadEquipmentPhoto, uploadPaymentQr, tractorClasses, featureOptions, paymentModeOptions } from "@/lib/equipmentData";
 import { useLang } from "@/lib/i18n";
 import { toast } from "sonner";
-import { CheckCircle, Loader2, ImagePlus, X } from "lucide-react";
+import { CheckCircle, Loader2, ImagePlus, X, QrCode } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -32,6 +32,8 @@ const ListEquipment = () => {
   const [paymentModes, setPaymentModes] = useState<string[]>(["advance_cash"]);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [qrFile, setQrFile] = useState<File | null>(null);
+  const [qrPreview, setQrPreview] = useState<string | null>(null);
 
   const toggle = (list: string[], set: (v: string[]) => void, val: string) =>
     set(list.includes(val) ? list.filter((v) => v !== val) : [...list, val]);
@@ -77,6 +79,17 @@ const ListEquipment = () => {
         }
       }
 
+      let qrPath: string | null = null;
+      if (qrFile) {
+        try {
+          qrPath = await uploadPaymentQr(qrFile, user.id);
+        } catch (uploadErr: any) {
+          toast.error(uploadErr.message || t("list.photoUploadFailed"));
+          setLoading(false);
+          return;
+        }
+      }
+
       await insertEquipment({
         name: formData.get("name") as string,
         type,
@@ -101,6 +114,8 @@ const ListEquipment = () => {
         payment_modes: paymentModes.length ? paymentModes : ["advance_cash"],
         advance_percent: Number(formData.get("advancePercent")) || 0,
         upi_id: (formData.get("upiId") as string) || null,
+        phonepe_number: (formData.get("phonepeNumber") as string) || null,
+        payment_qr_url: qrPath,
       });
 
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
@@ -122,6 +137,23 @@ const ListEquipment = () => {
     }
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const handleQrChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t("list.photoSizeError"));
+      return;
+    }
+    setQrFile(file);
+    setQrPreview(URL.createObjectURL(file));
+  };
+
+  const clearQr = () => {
+    setQrFile(null);
+    if (qrPreview) URL.revokeObjectURL(qrPreview);
+    setQrPreview(null);
   };
 
   const clearPhoto = () => {
@@ -305,12 +337,41 @@ const ListEquipment = () => {
                   <Label htmlFor="advancePercent">{t("list.advanceRequired")}</Label>
                   <Input id="advancePercent" name="advancePercent" type="number" placeholder="20" defaultValue="0" />
                 </div>
-                {paymentModes.includes("upi") && (
-                  <div className="space-y-2">
-                    <Label htmlFor="upiId">{t("list.upiId")}</Label>
-                    <Input id="upiId" name="upiId" placeholder="name@okaxis" />
+                <div className="space-y-2">
+                  <Label htmlFor="upiId">{t("list.upiId")}</Label>
+                  <Input id="upiId" name="upiId" placeholder="name@okaxis" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phonepeNumber">{t("list.phonepeNumber")}</Label>
+                  <Input id="phonepeNumber" name="phonepeNumber" placeholder="9876543210" inputMode="numeric" />
+                </div>
+              </div>
+
+              <div className="mt-3 space-y-2">
+                <Label>{t("list.paymentQr")}</Label>
+                <p className="text-xs text-muted-foreground">{t("list.qrHint")}</p>
+                {qrPreview ? (
+                  <div className="relative w-40 overflow-hidden rounded-lg border bg-muted">
+                    <img src={qrPreview} alt="QR preview" className="h-40 w-40 object-contain bg-background" />
+                    <button
+                      type="button"
+                      onClick={clearQr}
+                      className="absolute right-1 top-1 rounded-full bg-background/90 p-1.5 shadow-sm hover:bg-background"
+                      aria-label={t("list.removeQr")}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
+                ) : (
+                  <label
+                    htmlFor="qr"
+                    className="flex h-32 w-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-muted/30 p-2 text-center text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-muted/50"
+                  >
+                    <QrCode className="h-6 w-6" />
+                    <span>{t("list.clickUploadQr")}</span>
+                  </label>
                 )}
+                <input id="qr" type="file" accept="image/*" className="hidden" onChange={handleQrChange} />
               </div>
             </div>
 
