@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment, uploadEquipmentPhoto, tractorClasses, featureOptions, paymentModeOptions } from "@/lib/equipmentData";
+import { equipmentTypes, useDistricts, useTalukas, useVillages, insertEquipment, uploadEquipmentPhoto, uploadPaymentQr, tractorClasses, featureOptions, paymentModeOptions } from "@/lib/equipmentData";
 import { useLang } from "@/lib/i18n";
 import { toast } from "sonner";
-import { CheckCircle, Loader2, ImagePlus, X } from "lucide-react";
+import { CheckCircle, Loader2, ImagePlus, X, QrCode } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -32,6 +32,8 @@ const ListEquipment = () => {
   const [paymentModes, setPaymentModes] = useState<string[]>(["advance_cash"]);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [qrFile, setQrFile] = useState<File | null>(null);
+  const [qrPreview, setQrPreview] = useState<string | null>(null);
 
   const toggle = (list: string[], set: (v: string[]) => void, val: string) =>
     set(list.includes(val) ? list.filter((v) => v !== val) : [...list, val]);
@@ -77,6 +79,17 @@ const ListEquipment = () => {
         }
       }
 
+      let qrPath: string | null = null;
+      if (qrFile) {
+        try {
+          qrPath = await uploadPaymentQr(qrFile, user.id);
+        } catch (uploadErr: any) {
+          toast.error(uploadErr.message || t("list.photoUploadFailed"));
+          setLoading(false);
+          return;
+        }
+      }
+
       await insertEquipment({
         name: formData.get("name") as string,
         type,
@@ -101,6 +114,8 @@ const ListEquipment = () => {
         payment_modes: paymentModes.length ? paymentModes : ["advance_cash"],
         advance_percent: Number(formData.get("advancePercent")) || 0,
         upi_id: (formData.get("upiId") as string) || null,
+        phonepe_number: (formData.get("phonepeNumber") as string) || null,
+        payment_qr_url: qrPath,
       });
 
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
@@ -122,6 +137,23 @@ const ListEquipment = () => {
     }
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const handleQrChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t("list.photoSizeError"));
+      return;
+    }
+    setQrFile(file);
+    setQrPreview(URL.createObjectURL(file));
+  };
+
+  const clearQr = () => {
+    setQrFile(null);
+    if (qrPreview) URL.revokeObjectURL(qrPreview);
+    setQrPreview(null);
   };
 
   const clearPhoto = () => {
