@@ -46,6 +46,8 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
   const { t } = useLang();
   const { data: profile } = useProfile();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
 
   const [step, setStep] = useState<"details" | "payment" | "done">("details");
   const [startDate, setStartDate] = useState("");
