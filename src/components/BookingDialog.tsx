@@ -18,7 +18,9 @@ import UpiPayButtons from "@/components/UpiPayButtons";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
 import { IndianRupee, Loader2, ShieldCheck, Smartphone, Banknote, CreditCard } from "lucide-react";
 
 interface Props {
@@ -44,6 +46,8 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
   const { t } = useLang();
   const { data: profile } = useProfile();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
 
   const [step, setStep] = useState<"details" | "payment" | "done">("details");
   const [startDate, setStartDate] = useState("");
@@ -59,9 +63,19 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
   const rate = unit === "day" ? equipment.price_per_day : equipment.price_per_hour;
   const total = useMemo(() => Math.max(0, Number(qty) || 0) * Number(rate || 0), [qty, rate]);
   const advance = Math.round((total * (equipment.advance_percent || 0)) / 100);
-  const allowedModes = paymentModeOptions.filter((m) =>
-    (equipment.payment_modes?.length ? equipment.payment_modes : ["advance_cash"]).includes(m.value)
+  const hasOwnerPayInfo = Boolean(
+    equipment.upi_id || equipment.phonepe_number || equipment.payment_qr_url
   );
+  const enabledModes = new Set(
+    equipment.payment_modes?.length ? equipment.payment_modes : ["advance_cash"]
+  );
+  // Owner ne UPI ID / PhonePe number / QR diya hai to UPI + Online option hamesha dikhao
+  if (hasOwnerPayInfo) {
+    enabledModes.add("upi");
+    enabledModes.add("online");
+  }
+  const allowedModes = paymentModeOptions.filter((m) => enabledModes.has(m.value));
+
 
   const reset = () => {
     setStep("details");
@@ -108,7 +122,13 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
         notes: notes || null,
       });
       setStep("done");
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["equipment"] }),
+        queryClient.invalidateQueries({ queryKey: ["my-equipment"] }),
+        queryClient.invalidateQueries({ queryKey: ["my-bookings"] }),
+      ]);
       toast.success(t("book.toastBookingSent"));
+
     } catch (err: any) {
       toast.error(err.message || t("book.toastBookingFailed"));
     } finally {
