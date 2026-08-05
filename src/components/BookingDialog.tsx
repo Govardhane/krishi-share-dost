@@ -118,7 +118,13 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
         notes: notes || null,
       });
       setStep("done");
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["equipment"] }),
+        queryClient.invalidateQueries({ queryKey: ["my-equipment"] }),
+        queryClient.invalidateQueries({ queryKey: ["my-bookings"] }),
+      ]);
       toast.success(t("book.toastBookingSent"));
+
     } catch (err: any) {
       toast.error(err.message || t("book.toastBookingFailed"));
     } finally {
