@@ -18,7 +18,9 @@ import UpiPayButtons from "@/components/UpiPayButtons";
 import { useLang } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
 import { IndianRupee, Loader2, ShieldCheck, Smartphone, Banknote, CreditCard } from "lucide-react";
 
 interface Props {
