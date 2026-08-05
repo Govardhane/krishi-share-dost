@@ -59,9 +59,19 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
   const rate = unit === "day" ? equipment.price_per_day : equipment.price_per_hour;
   const total = useMemo(() => Math.max(0, Number(qty) || 0) * Number(rate || 0), [qty, rate]);
   const advance = Math.round((total * (equipment.advance_percent || 0)) / 100);
-  const allowedModes = paymentModeOptions.filter((m) =>
-    (equipment.payment_modes?.length ? equipment.payment_modes : ["advance_cash"]).includes(m.value)
+  const hasOwnerPayInfo = Boolean(
+    equipment.upi_id || equipment.phonepe_number || equipment.payment_qr_url
   );
+  const enabledModes = new Set(
+    equipment.payment_modes?.length ? equipment.payment_modes : ["advance_cash"]
+  );
+  // Owner ne UPI ID / PhonePe number / QR diya hai to UPI + Online option hamesha dikhao
+  if (hasOwnerPayInfo) {
+    enabledModes.add("upi");
+    enabledModes.add("online");
+  }
+  const allowedModes = paymentModeOptions.filter((m) => enabledModes.has(m.value));
+
 
   const reset = () => {
     setStep("details");
