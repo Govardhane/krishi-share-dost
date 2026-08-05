@@ -48,6 +48,28 @@ export const bookingDict: Dict = {
   },
   "book.whatsappRefSuffix": { en: " (Ref: {ref})", mr: " (संदर्भ: {ref})" },
 
+
+  // Enhanced booking flow
+  "book.step1": { en: "Details", mr: "तपशील" },
+  "book.step2": { en: "Payment", mr: "पेमेंट" },
+  "book.step3": { en: "Done", mr: "पूर्ण" },
+  "book.rateLine": { en: "Rate", mr: "दर" },
+  "book.qtyLine": { en: "Duration", mr: "कालावधी" },
+  "book.balance": { en: "Balance after work", mr: "काम झाल्यावर उर्वरित" },
+  "book.payNow": { en: "Pay now", mr: "आता द्यायचे" },
+  "book.unavailableWarn": { en: "This machine is currently marked unavailable — the owner may confirm for a later date.", mr: "हे यंत्र सध्या उपलब्ध नाही — मालक पुढील तारखेसाठी होकार देऊ शकतो." },
+  "book.summary": { en: "Booking summary", mr: "बुकिंग सारांश" },
+  "book.copy": { en: "Copy details", mr: "तपशील कॉपी करा" },
+  "book.copied": { en: "Copied", mr: "कॉपी झाले" },
+  "book.myBookings": { en: "Payment status", mr: "पेमेंट स्थिती" },
+  "book.paidLabel": { en: "Paid", mr: "दिले" },
+  "book.pendingLabel": { en: "Pending", mr: "बाकी" },
+  "book.errPastDate": { en: "Start date cannot be in the past", mr: "सुरुवातीची तारीख मागील असू शकत नाही" },
+  "pay.copyUpi": { en: "Copy UPI ID", mr: "यूपीआय आयडी कॉपी करा" },
+  "pay.copiedUpi": { en: "UPI ID copied", mr: "यूपीआय आयडी कॉपी झाला" },
+  "pay.copyNumber": { en: "Copy number", mr: "नंबर कॉपी करा" },
+  "pay.amountChip": { en: "Amount to pay", mr: "द्यायची रक्कम" },
+
   // UPI pay buttons
   "pay2.title": { en: "Payment", mr: "पेमेंट" },
   "pay2.qrAlt": { en: "UPI QR code for payment", mr: "पेमेंटसाठी यूपीआय क्यूआर कोड" },
