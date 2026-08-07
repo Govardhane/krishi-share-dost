@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import BookingDialog from "@/components/BookingDialog";
 import { useLang } from "@/lib/i18n";
+import { OwnerTrustRow } from "@/components/TrustSignals";
 import {
   MapPin,
   IndianRupee,
