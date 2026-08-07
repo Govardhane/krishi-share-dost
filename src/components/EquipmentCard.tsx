@@ -11,7 +11,6 @@ import {
   MessageCircle,
   Phone,
   MessageSquare,
-  User,
   Package,
   Gauge,
   Star,
