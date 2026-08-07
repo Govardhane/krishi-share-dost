@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { EquipmentRow, createBooking, paymentModeOptions } from "@/lib/equipmentData";
 import UpiPayButtons from "@/components/UpiPayButtons";
 import { useLang } from "@/lib/i18n";
+import { OwnerTrustRow, SafetyTips } from "@/components/TrustSignals";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useQueryClient } from "@tanstack/react-query";
