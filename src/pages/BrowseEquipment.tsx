@@ -144,6 +144,10 @@ const BrowseEquipment = () => {
         <h1 className="font-display text-3xl font-bold text-foreground sm:text-4xl">{t("browse.title")}</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">{t("browse.subtitle")}</p>
 
+        <div className="mt-5">
+          <TrustAssuranceBar />
+        </div>
+
         <div className="mt-4 rounded-lg border bg-muted/40 p-3 text-sm text-muted-foreground">
           {t("browse.savedAreaNote")}
         </div>
