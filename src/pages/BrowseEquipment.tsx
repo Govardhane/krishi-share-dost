@@ -10,6 +10,7 @@ import { MapPin, Lock, IndianRupee, CheckCircle2, PackageSearch } from "lucide-r
 import { Button } from "@/components/ui/button";
 
 import { useLang } from "@/lib/i18n";
+import { TrustAssuranceBar } from "@/components/TrustSignals";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 
