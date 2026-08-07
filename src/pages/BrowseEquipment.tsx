@@ -10,6 +10,7 @@ import { MapPin, Lock, IndianRupee, CheckCircle2, PackageSearch } from "lucide-r
 import { Button } from "@/components/ui/button";
 
 import { useLang } from "@/lib/i18n";
+import { TrustAssuranceBar } from "@/components/TrustSignals";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 
@@ -143,6 +144,10 @@ const BrowseEquipment = () => {
       <div className="container mx-auto px-4 py-10">
         <h1 className="font-display text-3xl font-bold text-foreground sm:text-4xl">{t("browse.title")}</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">{t("browse.subtitle")}</p>
+
+        <div className="mt-5">
+          <TrustAssuranceBar />
+        </div>
 
         <div className="mt-4 rounded-lg border bg-muted/40 p-3 text-sm text-muted-foreground">
           {t("browse.savedAreaNote")}

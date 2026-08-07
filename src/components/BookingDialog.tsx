@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { EquipmentRow, createBooking, paymentModeOptions } from "@/lib/equipmentData";
 import UpiPayButtons from "@/components/UpiPayButtons";
 import { useLang } from "@/lib/i18n";
+import { OwnerTrustRow, SafetyTips } from "@/components/TrustSignals";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useQueryClient } from "@tanstack/react-query";
@@ -281,6 +282,8 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
             </DialogHeader>
 
             <div className="space-y-4">
+              <OwnerTrustRow equipment={equipment} />
+
               {!equipment.available && (
                 <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs text-muted-foreground">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
@@ -465,10 +468,14 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
 
               {breakdown}
 
+              <SafetyTips />
+
               <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
                 {t("book.trustNote")}
               </div>
+
+
 
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" onClick={() => setStep("details")}>
