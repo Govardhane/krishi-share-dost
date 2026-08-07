@@ -3,6 +3,7 @@ import { Dict } from "./i18n-types";
 import { cardsDict } from "./i18n-cards";
 import { bookingDict } from "./i18n-booking";
 import { formsDict } from "./i18n-forms";
+import { trustDict } from "./i18n-trust";
 
 export type Lang = "en" | "mr";
 
