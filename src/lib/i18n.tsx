@@ -107,7 +107,7 @@ export const baseDict: Dict = {
   "pay.desktopHint": { en: "On desktop? Scan the QR from your phone's UPI app.", mr: "डेस्कटॉपवर आहात? फोनच्या यूपीआय अ‍ॅपने QR स्कॅन करा." },
 };
 
-export const dict: Dict = { ...baseDict, ...cardsDict, ...bookingDict, ...formsDict };
+export const dict: Dict = { ...baseDict, ...cardsDict, ...bookingDict, ...formsDict, ...trustDict };
 
 interface Ctx {
   lang: Lang;
