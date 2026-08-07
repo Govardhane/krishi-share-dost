@@ -196,14 +196,12 @@ const EquipmentCard = ({ equipment, rank }: { equipment: EquipmentRow; rank?: nu
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <User className="h-3.5 w-3.5 shrink-0" />
-            <span>{equipment.owner_name}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
             <Package className="h-3.5 w-3.5 shrink-0" />
             <span>{t("card.quantity")} {equipment.quantity}</span>
           </div>
         </div>
+
+        <OwnerTrustRow equipment={equipment} />
 
         {equipment.payment_modes?.length > 0 && (
           <p className="mt-3 text-[11px] text-muted-foreground">
