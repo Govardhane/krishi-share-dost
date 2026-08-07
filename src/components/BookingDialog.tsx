@@ -468,10 +468,14 @@ const BookingDialog = ({ equipment, open, onOpenChange }: Props) => {
 
               {breakdown}
 
+              <SafetyTips />
+
               <div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
                 {t("book.trustNote")}
               </div>
+
+
 
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" onClick={() => setStep("details")}>
