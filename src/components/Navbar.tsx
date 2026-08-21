@@ -46,6 +46,15 @@ const Navbar = () => {
             </span>
           </Link>
 
+          <img
+            src={equipmentStrip.url}
+            alt="3D render of tractor, rotavator, cultivator, farmer trailer and harrow"
+            loading="lazy"
+            className="mx-auto hidden h-16 w-auto max-w-[52%] object-contain md:block"
+          />
+
+
+
           <button
             type="button"
             className="ml-auto rounded-md p-2 text-foreground md:hidden"
