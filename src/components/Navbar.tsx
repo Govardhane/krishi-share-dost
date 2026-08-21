@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import logo from "@/assets/agrishare-logo.png";
 import { useLang } from "@/lib/i18n";
 import TopBar from "@/components/TopBar";
+import equipmentStrip from "@/assets/equipment-lineup-3d.png.asset.json";
 
 const Navbar = () => {
   const location = useLocation();
