@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import logo from "@/assets/agrishare-logo.png";
 import { useLang } from "@/lib/i18n";
 import TopBar from "@/components/TopBar";
-import equipmentStrip from "@/assets/equipment-lineup-3d.png.asset.json";
+import equipmentStrip from "@/assets/equipment-lineup-3d.png";
 
 const Navbar = () => {
   const location = useLocation();
@@ -34,36 +34,36 @@ const Navbar = () => {
 
       {/* Identity strip */}
       <div className="bg-background">
-        <div className="container mx-auto flex items-center gap-4 px-4 py-3">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="AI- Agrishare logo" className="h-14 w-14 object-contain" />
-            <span className="leading-tight">
-              <span className="block font-display text-2xl font-bold tracking-tight text-foreground">
-                AI- <span className="text-secondary">Agrishare</span>
+        <div className="container mx-auto flex flex-col items-stretch gap-2 px-4 py-3 md:flex-row md:items-center md:gap-4">
+          <div className="flex items-center justify-between gap-3">
+            <Link to="/" className="flex items-center gap-3">
+              <img src={logo} alt="AI- Agrishare logo" className="h-14 w-14 object-contain" />
+              <span className="leading-tight">
+                <span className="block font-display text-2xl font-bold tracking-tight text-foreground">
+                  AI- <span className="text-secondary">Agrishare</span>
+                </span>
+                <span className="hidden text-xs font-medium uppercase tracking-widest text-muted-foreground sm:block">
+                  {t("brand.sub")}
+                </span>
               </span>
-              <span className="hidden text-xs font-medium uppercase tracking-widest text-muted-foreground sm:block">
-                {t("brand.sub")}
-              </span>
-            </span>
-          </Link>
+            </Link>
+
+            <button
+              type="button"
+              className="rounded-md p-2 text-foreground md:hidden"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Menu"
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
 
           <img
-            src={equipmentStrip.url}
+            src={equipmentStrip}
             alt="3D render of tractor, rotavator, cultivator, farmer trailer and harrow"
             loading="lazy"
-            className="mx-auto hidden h-16 w-auto max-w-[52%] object-contain md:block"
+            className="mx-auto h-28 w-auto max-w-full object-contain md:h-36 md:max-w-[55%] lg:h-40"
           />
-
-
-
-          <button
-            type="button"
-            className="ml-auto rounded-md p-2 text-foreground md:hidden"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Menu"
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
         </div>
       </div>
 
