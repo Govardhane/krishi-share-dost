@@ -35,7 +35,7 @@ const Navbar = () => {
       {/* Identity strip */}
       <div className="bg-background">
         <div className="container mx-auto flex items-center gap-4 px-4 py-3">
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" className="flex shrink-0 items-center gap-3">
             <img src={logo} alt="AI- Agrishare logo" className="h-14 w-14 object-contain" />
             <span className="leading-tight">
               <span className="block font-display text-2xl font-bold tracking-tight text-foreground">
@@ -51,10 +51,8 @@ const Navbar = () => {
             src={equipmentStrip.url}
             alt="3D render of tractor, rotavator, cultivator, farmer trailer and harrow"
             loading="lazy"
-            className="mx-auto hidden h-16 w-auto max-w-[52%] object-contain md:block"
+            className="h-20 w-auto max-w-[60%] object-contain sm:h-24 md:h-28 lg:h-32"
           />
-
-
 
           <button
             type="button"
