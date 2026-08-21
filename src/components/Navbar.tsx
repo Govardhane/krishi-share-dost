@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import logo from "@/assets/agrishare-logo.png";
 import { useLang } from "@/lib/i18n";
 import TopBar from "@/components/TopBar";
+import equipmentStrip from "@/assets/equipment-lineup-3d.png.asset.json";
 
 const Navbar = () => {
   const location = useLocation();
@@ -45,6 +46,15 @@ const Navbar = () => {
               </span>
             </span>
           </Link>
+
+          <img
+            src={equipmentStrip.url}
+            alt="3D render of tractor, rotavator, cultivator, farmer trailer and harrow"
+            loading="lazy"
+            className="mx-auto hidden h-16 w-auto max-w-[52%] object-contain md:block"
+          />
+
+
 
           <button
             type="button"
