@@ -59,7 +59,7 @@ const Navbar = () => {
           </div>
 
           <img
-            src={equipmentStrip.url}
+            src={equipmentStrip}
             alt="3D render of tractor, rotavator, cultivator, farmer trailer and harrow"
             loading="lazy"
             className="mx-auto h-24 w-auto max-w-full object-contain md:h-28 md:max-w-[55%] lg:h-32"
